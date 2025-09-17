@@ -5,6 +5,8 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 set( ${SON8PROJ}_LIBRARY_SOURCES
     compiler/generate.cxx
     compiler/transfer.cxx
+    tokenizer/token.cxx
+    tokenizer/tokenizer.cxx
     utility/error.cxx
 )
 add_library( ${SON8PROJ}_library STATIC ${${SON8PROJ}_LIBRARY_SOURCES} )
