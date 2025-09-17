@@ -1,5 +1,5 @@
-#ifndef SON8_SOURCE_APP_COMPILER_HXX
-#define SON8_SOURCE_APP_COMPILER_HXX
+#ifndef APP_COMPILER_HXX
+#define APP_COMPILER_HXX
 
 namespace app {
 
@@ -9,10 +9,10 @@ namespace app {
         void generate( );
         // from intermediate representation to C++17
         void transfer( );
-    };
+    }; // class Compiler
 
 } // namespace app
 
-#endif//SON8_SOURCE_APP_COMPILER_HXX
+#endif//APP_COMPILER_HXX
 
 // Ⓒ 2025 Oleg'Ease'Kharchuk ᦒ
