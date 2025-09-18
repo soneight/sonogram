@@ -1,9 +1,11 @@
 #ifndef APP_TOKENIZER_HXX
 #define APP_TOKENIZER_HXX
 
+#include <app/alias.hxx>
 #include <app/tokenizer/token.hxx>
 #include <app/utility/error.hxx>
 
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -11,9 +13,8 @@ namespace app {
 
     class Tokenizer {
         using Tokens = std::vector< Token >;
+        using Message = std::string;
         using Source = std::string_view;
-        using Char = unsigned char;
-        using Size = std::size_t;
         using Pos = Source::size_type;
         static inline constexpr auto EndPos = Source::npos;
         Source source_;
@@ -29,7 +30,11 @@ namespace app {
         // check if position is within source bounds
         bool in_source( Pos from ) const;
         void add_token( Token::Kind kind, Pos to );
-        void parse_single( Char ch );
+        void add_error( Message message );
+        void parse_single( );
+        void parse_identifier( );
+        void parse_string( );
+        void parse_keyword( );
     public:
         // Important: source lifetime must be greater than Tokenizer lifetime
         explicit Tokenizer( Source source );

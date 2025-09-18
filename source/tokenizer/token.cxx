@@ -39,6 +39,12 @@ namespace app {
         return column_;
     }
 
+    bool Token::has_kind( ) const { return kind_ < Kind::Last; }
+
+    bool Token::has_value( ) const { return !value_.empty( ); }
+
+    bool Token::has_position( ) const { return line_ != 0 && column_ != 0; }
+
     auto Token::char2kind( Char ch ) -> Kind {
         switch ( ch ) {
             case ':' : return Kind::ScopeBeg;
@@ -47,11 +53,6 @@ namespace app {
             default  : break;
         }
         return Kind::Unknown;
-    }
-
-    bool Token::is_single( Char ch ) {
-        static Value singles{ ",:;" };
-        return singles.find( ch ) != Value::npos;
     }
 
 } // namespace app

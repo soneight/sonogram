@@ -8,6 +8,7 @@ set( ${SON8PROJ}_LIBRARY_SOURCES
     tokenizer/token.cxx
     tokenizer/tokenizer.cxx
     utility/error.cxx
+    utility/print.cxx
 )
 add_library( ${SON8PROJ}_library STATIC ${${SON8PROJ}_LIBRARY_SOURCES} )
 target_include_directories( ${SON8PROJ}_library PUBLIC include )

@@ -36,8 +36,11 @@ namespace app {
         [[nodiscard]] auto line( ) const -> unsigned;
         [[nodiscard]] auto column( ) const -> unsigned;
 
+        [[nodiscard]] bool has_kind( ) const;
+        [[nodiscard]] bool has_value( ) const;
+        [[nodiscard]] bool has_position( ) const;
+
         static auto char2kind( Char ch ) -> Kind;
-        static bool is_single( Char ch );
     }; // class Token
 
 } // namespace app
