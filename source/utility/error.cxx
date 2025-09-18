@@ -5,17 +5,17 @@
 namespace app {
 
     void Error::throw_exception( ) const {
-        throw std::runtime_error( messege_ );
+        throw std::runtime_error( message_ );
     }
 
-    void Error::add( Str const & messege ) {
-        messege_ += '\n' + messege;
+    void Error::add( Message const &message ) {
+        message_ += '\n' + message;
         --limit_;
         if ( limit_ == 0 ) throw_exception( );
     }
 
     bool Error::has_errors( ) const {
-        return !messege_.empty( );
+        return !message_.empty( );
     }
 
     void Error::check_exception( ) const {

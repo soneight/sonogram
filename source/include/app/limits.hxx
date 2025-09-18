@@ -4,7 +4,7 @@
 #include <cassert>
 
 namespace app::limits {
-    // sorted from the smallest to the largest and then by alpyhabetical order
+
 #if APP_LIMITS_FORCE_ERROR_COUNT_MAX > 0
     static inline constexpr unsigned Error_Count_Max       = APP_LIMITS_FORCE_ERROR_COUNT_MAX;
 #else

@@ -8,13 +8,13 @@
 namespace app {
 
     class Error final {
-        using Str = std::string;
-        Str messege_;
+        using Message = std::string;
+        Message message_;
         unsigned limit_{ app::limits::Error_Count_Max  };
         void throw_exception( ) const;
     public:
         Error( ) = default;
-        void add( Str const & messege );
+        void add( Message const & message );
         bool has_errors( ) const;
         void check_exception( ) const;
     }; // class Error
