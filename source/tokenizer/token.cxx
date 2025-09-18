@@ -48,8 +48,7 @@ namespace app {
     bool Token::has_position( ) const { return line_ != 0 && column_ != 0; }
 
     bool Token::is_single( Char ch ) {
-        static std::string singles{ ",:;" };
-        return singles.find( ch ) != std::string::npos;
+        return std::find( singles_.begin( ), singles_.end( ), ch ) != singles_.end( );
     }
 
     bool Token::is_identifier_edge( Char ch ) {
@@ -63,7 +62,7 @@ namespace app {
 
     auto Token::char2kind( Char ch ) -> Kind {
         auto it = std::find( singles_.begin( ), singles_.end( ), ch );
-        if ( it == singles_.end( ) ) return Kind::Last;
+        if ( it == singles_.end( ) ) return Kind::Unknown;
 
         auto index = std::distance( singles_.begin( ), it );
         return static_cast< Kind >( static_cast< Size >( Kind::SINGLE_beg ) + index );
@@ -71,7 +70,7 @@ namespace app {
 
     auto Token::keyword2kind( Value keyword ) -> Kind {
         auto it = std::find( keywords_.begin( ), keywords_.end( ), keyword );
-        if ( it == keywords_.end( ) ) return Kind::Last;
+        if ( it == keywords_.end( ) ) return Kind::Unknown;
 
         auto index = std::distance( keywords_.begin( ), it );
         return static_cast< Kind >( static_cast< Size >( Kind::KEYWORD_beg ) + index );

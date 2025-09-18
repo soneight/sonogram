@@ -31,6 +31,12 @@ namespace app {
 
     void Tokenizer::parse_single( ) {
         auto kind = Token::char2kind( source_[pos_] );
+        if ( kind == Token::Kind::Unknown ) {
+            add_error( "Unknown single-character token" );
+            ++pos_;
+            ++column_;
+            return;
+        }
         add_token( kind, pos_ + 1 );
     }
 
@@ -53,7 +59,7 @@ namespace app {
         Source keyword{ source_.substr( pos_, to - pos_ ) };
 
         auto kind = Token::keyword2kind( keyword );
-        if ( kind == Token::Kind::Last ) {
+        if ( kind == Token::Kind::Unknown ) {
             add_error( "Unknown keyword: " + Message{ keyword } );
             pos_ = to;
             return;

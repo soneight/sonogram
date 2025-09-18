@@ -37,6 +37,7 @@ namespace app {
         static constexpr Keywords keywords_{{
             "-program", "-echo"
         }};
+        static_assert( keywords_.size( ) == Keyword_Count_ );
         // single-character token helpers
         static inline constexpr Size Single_Beg_ = static_cast< Size >( Kind_::SINGLE_beg );
         static inline constexpr Size Single_End_ = static_cast< Size >( Kind_::SINGLE_end );
@@ -45,6 +46,7 @@ namespace app {
         static constexpr Singles singles_{{
             ':', ';', ','
         }};
+        static_assert( singles_.size( ) == Single_Count_ );
         // data members
         Kind_ kind_{ Kind_::Last };
         Value_ value_{ };
