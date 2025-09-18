@@ -1,7 +1,9 @@
 #include <app/limits.hxx>
 #include <app/tokenizer/token.hxx>
 
+#include <algorithm>
 #include <cassert>
+#include <string>
 
 namespace app {
 
@@ -45,14 +47,33 @@ namespace app {
 
     bool Token::has_position( ) const { return line_ != 0 && column_ != 0; }
 
+    bool Token::is_single( Char ch ) {
+        return std::find( singles_.begin( ), singles_.end( ), ch ) != singles_.end( );
+    }
+
+    bool Token::is_identifier_edge( Char ch ) {
+        ch = std::tolower( ch );
+        return ch >= 'a' && ch <= 'z';
+    }
+
+    bool Token::is_identifier( Char ch ) {
+        return is_identifier_edge( ch ) || ch == '_';
+    }
+
     auto Token::char2kind( Char ch ) -> Kind {
-        switch ( ch ) {
-            case ':' : return Kind::ScopeBeg;
-            case ';' : return Kind::ScopeEnd;
-            case ',' : return Kind::Comma;
-            default  : break;
-        }
-        return Kind::Unknown;
+        auto it = std::find( singles_.begin( ), singles_.end( ), ch );
+        if ( it == singles_.end( ) ) return Kind::Unknown;
+
+        auto index = std::distance( singles_.begin( ), it );
+        return static_cast< Kind >( static_cast< Size >( Kind::SINGLE_beg ) + index );
+    }
+
+    auto Token::keyword2kind( Value keyword ) -> Kind {
+        auto it = std::find( keywords_.begin( ), keywords_.end( ), keyword );
+        if ( it == keywords_.end( ) ) return Kind::Unknown;
+
+        auto index = std::distance( keywords_.begin( ), it );
+        return static_cast< Kind >( static_cast< Size >( Kind::KEYWORD_beg ) + index );
     }
 
 } // namespace app
