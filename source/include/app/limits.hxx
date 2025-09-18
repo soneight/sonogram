@@ -15,18 +15,6 @@ namespace app::limits {
     static inline constexpr unsigned Lines_Count_Max       = 0b1 << 10; // 1 KiB
     static inline constexpr unsigned Columns_Count_Max     = 0b1 << 8; // 256 bytes (characters)
 
-    class Limit {
-        unsigned value_{ 0 };
-        unsigned limit_{ 0 };
-    public:
-        Limit( ) = default;
-        explicit Limit( unsigned value, unsigned limit )
-            : value_( value ), limit_( limit ) {
-            assert( value_ <= limit_ );
-        }
-
-    };
-
 } // namespace app::limits
 
 #endif//APP_LIMITS_HXX
