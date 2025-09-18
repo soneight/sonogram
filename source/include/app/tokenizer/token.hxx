@@ -1,13 +1,14 @@
 #ifndef APP_TOKENIZER_TOKEN_HXX
 #define APP_TOKENIZER_TOKEN_HXX
 
+#include <app/alias.hxx>
+
 #include <string_view>
 
 namespace app {
 
     class Token {
-        using Value = std::string_view;
-        using Char = unsigned char;
+        using Value_ = std::string_view;
         enum class Kind_ {
             IdentifierDefault,
             IdentifierCaps,
@@ -22,11 +23,12 @@ namespace app {
             Last
         };
         Kind_ kind_{ Kind_::Last };
-        Value value_{ };
+        Value_ value_{ };
         unsigned line_{ 0 };
         unsigned column_{ 0 };
     public:
         using Kind = Kind_;
+        using Value = Value_;
         Token( ) = default;
         explicit Token( Kind kind );
         Token( Kind kind, Value value );

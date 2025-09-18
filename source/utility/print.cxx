@@ -7,9 +7,9 @@
 
 namespace app {
 
-    auto to_string( Token::Kind kind ) -> std::string_view {
+    auto to_string( Token::Kind kind ) -> Token::Value {
         using std::operator""sv;
-        static constexpr std::array< std::string_view, static_cast< Size >( Token::Kind::Last ) > kinds{{
+        static constexpr std::array< Token::Value, static_cast< Size >( Token::Kind::Last ) > kinds{{
             "IdentifierDefault"sv,
             "IdentifierCaps"sv,
             "KeywordProgram"sv,
@@ -25,8 +25,8 @@ namespace app {
 
     std::ostream &operator<<( std::ostream &os, Token const &token ) {
         os << "Token{ ";
-        os << (token.has_kind( ) ? to_string( token.kind( ) ) : "Kindless") << ", ";
-        os << (token.has_value( ) ? token.value( ) : "Valueless") << ", ";
+        os << ( token.has_kind( ) ? to_string( token.kind( ) ) : "Kindless" ) << ", ";
+        os << ( token.has_value( ) ? token.value( ) : "Valueless" ) << ", ";
 
         if ( token.has_position( ) ) {
             os << "line: " << token.line( ) << ", column: " << token.column( );

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
+#include <stdexcept>
 
 namespace app {
 
@@ -24,6 +25,7 @@ namespace app {
     }
 
     Tokenizer::Tokenizer( Source source ) : source_( source ) {
+        if ( source_.back( ) != '\n' ) throw std::runtime_error( "Source must end with a new line" );
         tokens_.reserve( source.size( ) / 8 ); // rough estimate
         while ( nextchar( ), pos_ != EndPos ) {
             Char ch = source_[pos_];
