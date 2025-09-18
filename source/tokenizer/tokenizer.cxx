@@ -94,7 +94,7 @@ namespace app {
 
     void Tokenizer::add_token( Token::Kind kind, Pos to ) {
         Size size = to - pos_;
-        tokens_.emplace_back( kind, source_.substr( pos_, size), line_, column_ );
+        tokens_.emplace_back( kind, source_.substr( pos_, size ), line_, column_ );
         pos_ += size;
         column_ += size;
     }
