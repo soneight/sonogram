@@ -12,6 +12,7 @@ namespace app {
         enum class Context {
             Global,
             Statement,
+            EndOfFile,
         };
         using String = std::string;
         String program_name_{ };
@@ -39,18 +40,32 @@ namespace app {
                 main_body_ += "    std::cout << " + std::string{ pos_->value( ) } + ";\n";
                 ++pos_;
             }
-            if ( pos_->kind( ) != Token::Kind::Comma && pos_->kind( ) != Token::Kind::ScopeEnd ) throw std::runtime_error( "Expected ',' or ';' after statement" );
+            if ( pos_->kind( ) == Token::Kind::Comma ) {
+                ++pos_;
+                return;
+            }
+            if ( pos_->kind( ) == Token::Kind::ScopeEnd ) {
+                context_ = Context::EndOfFile;
+                ++pos_;
+                return;
+            }
+            throw std::runtime_error( "Unexpected token" );
             ++pos_;
+        }
+        void process_end_of_file( ) {
+            if ( pos_ != end_ ) throw std::runtime_error( "Expected end of file" );
         }
     public:
         Parser( Tokens const &tokens ) : pos_( tokens.begin( ) ), end_( tokens.end( ) ) {
             while ( pos_ != end_ ) {
                 switch ( context_ ) {
-                    case Context::Global: process_global( ); break;
-                    case Context::Statement: process_statement( ); break;
-                    default: throw std::runtime_error( "Unknown generator context" );
+                case Context::Global: process_global( ); break;
+                case Context::Statement: process_statement( ); break;
+                case Context::EndOfFile: process_end_of_file( ); break;
+                    default: throw std::runtime_error( "Unknown parser context" );
                 }
             }
+            if ( context_ != Context::EndOfFile ) throw std::runtime_error( "Unexpected end of file" );
         }
 
         auto str( ) -> String {
