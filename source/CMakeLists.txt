@@ -3,6 +3,7 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 set( ${SON8PROJ}_LIBRARY_SOURCES
+    compiler/compiler.cxx
     compiler/generate.cxx
     compiler/transfer.cxx
     tokenizer/token.cxx

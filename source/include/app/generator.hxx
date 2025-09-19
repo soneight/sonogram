@@ -61,6 +61,10 @@ namespace app {
             result += "}\n";
             return result;
         }
+
+        String name( ) {
+            return program_name_;
+        }
     };
 
 } // namespace app
