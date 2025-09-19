@@ -11,8 +11,9 @@
 
 namespace app {
 
+    using Tokens = std::vector< Token >;
+
     class Tokenizer {
-        using Tokens = std::vector< Token >;
         using Message = std::string;
         using Source = std::string_view;
         using Pos = Source::size_type;
