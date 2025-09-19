@@ -1,16 +1,15 @@
 # SONOGRAM
 > Programming language compiler written in C++17 that translates its source code to C++17 and NASM assembly.
 
-> "Mistakes aren't fatal—just slow... if you believe it."
+
 
 ## Introduction
 > this design is my first ever language design attempt,
 > so current wording can be ambiguous, misleading, and confusing.
 
-> The main goal is to discourage mistakes by making programs inefficient,
-> rather than causing erroneous behavior, if this is even possible to achieve.
-> So using language features incorrectly should lead to inefficient code generation.
+> `(idea)` indicates features that are still under consideration and may not be implemented.
 
+> `(temp)` indicates features that are temporarily included for testing purposes and may be removed later.
 
 ## Roadmap
 > Not rushed; eight-year (starting from 2025) plan for release.
@@ -24,6 +23,10 @@
 > single line comments start with `# ` or with copyright symbol `Ⓒ ` (U+24B8) followed by space
 
 > multi-line comments start with ~~(`#:` and end with `;#`)~~
+
+> if multi-line supported the entire last line containing the closing `;#`
+> is always ignored—no code or tokens after `;#` are processed.
+> This prevents comment injection, unlike C++ multi-line comments (`/* ... */`)
 
 ## Keywords
 > starts with `-` symbol, `false` and `true` not supported as they does not fit well with keyword style,
@@ -39,7 +42,7 @@
 |`void`   | (idea) Uninitialized marker to indicate uninitialized value |
 |`move`   | (idea) Right hand variable specifier for move semantics (like C++ std::move) |
 |`args`   | (idea) Built-in array of command-line arguments |
-|`echo`   | (idea) Built-in function to print to standard output |
+|`echo`   | (temp) Built-in function to print to standard output |
 |`exit`   | Built-in variable to return value from `-func` and `-program` |
 |`case`   | Conditional branching (replaces traditional `if` and `else-if`) |
 |`else`   | Traditional else branching |
@@ -78,6 +81,8 @@
 |`cast`| (idea) Special marker that allows implicit type conversion in parameter declaration or argument passing |
 |`auto`| (idea) Type is deduced from initialization expression |
 
+Array type is declared by appending `[]` to any built-in type (e.g., `int2[]`).
+
 ### Specifiers (for parameters and variables, keywords continued)
 > no specifier means value copy, (only one specifier is allowed per parameter)
 
@@ -87,6 +92,37 @@
 | `ptr`     | Pointer mutable type (cannot be const and point to const values, opposite to `-ref`) |
 | `ref`     | Reference constant type (always const, opposite to `-ptr`) |
 | `fwd`     | (idea) Forwarding mutable type (move semantics from C++, not sure to support it) |
+
+## Literals
+> simply for most part equivalent to C/C++ literals
+
+| literal | Description |
+|---------|-------------|
+| ' '     | Character literal, single quotes, e.g., `'A'`, `'\n'`, `'\x41'` |
+| " "     | String literal, double quotes, e.g., `"Hello, World!\n"` |
+| 42      | Integer literals, decimal (e.g., `42`), hexadecimal (e.g., `0x2A`), binary (e.g., `0b101010`) |
+| 3.14    | Real number literals with decimal point (e.g., `3.14`, `0.001`, `2.0`) |
+| 0b0/0b1 | (idea) Boolean true and false for `-flag` type |
+| 0-ptr   | (idea) Null pointer literal for pointer types |
+
+## Conversions
+> without -cast, all conversions must be explicit and compatible types enforced at compile time.
+
+> that's why `-cast` specifier are allowed in almost all possible variants like
+
+```son
+a-cast-int{ b },                    # a variable are allowed to be implicitly converted in all contexts
+test-cast-proc( a-int0, b-int0 ):;  # parameters allowed to be implicitly converted in all contexts
+test-proc( a-cast-int0, b-int0 ):;  # only a parameter allowed to be implicitly converted in all contexts
+case-cast ( expression ) : ;        # all variables in expression allowed to be implicitly converted
+b-int3{ c-cast },                   # c allowed to be implicitly converted when assigning to b
+```
+
+The -cast specifier relaxes restrictions on type conversions based on context:,
+- on type declaration it make it fully relaxed for any read or write operation,
+- on variable directly it relaxes conversion for that one read operation only
+- on function declaration it relaxes all function parameters for any operation (and on return -exit?),
+- on conditional (like -case-cast) it relaxes all variables in that expression for any operation.
 
 ## Operators
 > almost all operators are two characters for consistency,
