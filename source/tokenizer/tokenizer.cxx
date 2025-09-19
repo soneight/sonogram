@@ -21,7 +21,7 @@ namespace app {
             } else if ( ch == '-' ) {
                 parse_keyword( );
             } else {
-                add_error( "Unknown character (cast to int): " + Message{ std::to_string(static_cast<unsigned>(ch)) } );
+                add_error( "Unknown character: " + Message{ source_.substr( pos_, 8 ) } );
                 ++pos_;
                 ++column_;
             }
@@ -70,6 +70,12 @@ namespace app {
     void Tokenizer::parse_identifier( ) {
         Pos to = pos_ + 1;
         while ( in_source( to ) && Token::is_identifier( source_[to] ) ) ++to;
+        if ( source_[to - 1] == '_' ) {
+            column_ += to - pos_ - 1;
+            add_error( "Symbol '_' can appear only inside identifiers (cannot be leading or trailing)" );
+            pos_ = to;
+            return;
+        }
         add_token( Token::Kind::IdentifierDefault, to );
     }
 
@@ -81,7 +87,7 @@ namespace app {
     }
 
     void Tokenizer::add_error( Message message ) {
-        error_.add( message + ", Ln: " + std::to_string( line_ ) + ", Col: " + std::to_string( column_ ) );
+        error_.add( "\t" + message + ", Ln: " + std::to_string( line_ ) + ", Col: " + std::to_string( column_ ) );
     }
 
     bool Tokenizer::in_source( Pos from ) const {
