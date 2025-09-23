@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace app {
+namespace app::alias {
 
     using Char = unsigned char;
     using Size = std::size_t;
@@ -18,6 +18,9 @@ namespace app {
     using Unt1 = uint16_t;
     using Unt2 = uint32_t;
     using Unt3 = uint64_t;
+
+    using Column = Unt1;
+    using Line = Unt2;
 
 } // namespace app
 

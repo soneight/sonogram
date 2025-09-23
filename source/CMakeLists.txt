@@ -24,8 +24,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable( son8__mainland )
 
-add_library( ${SON8PROJ}_faceimpl INTERFACE )
-target_include_directories( ${SON8PROJ}_faceimpl INTERFACE face )
+set( ${SON8PROJ}_FACEIMPL_SOURCES
+    impl/lexer/token.cxx
+    impl/utility/error.cxx
+    impl/utility/print.cxx
+)
+
+add_library( ${SON8PROJ}_faceimpl STATIC ${${SON8PROJ}_FACEIMPL_SOURCES} )
+target_include_directories( ${SON8PROJ}_faceimpl PUBLIC face )
 
 set( ${SON8PROJ}_SOURCES main.cxx )
 

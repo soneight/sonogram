@@ -1,26 +1,28 @@
 #ifndef APP_UTILITY_ERROR_HXX
 #define APP_UTILITY_ERROR_HXX
-
-#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
-#error "File is subject to be removed. Use source/face/app/utility/error.hxx instead."
-#endif
-
+// app headers
 #include <app/limits.hxx>
-
+// std headers
 #include <string>
 
 namespace app {
 
     class Error final {
-        using Message = std::string;
-        Message message_;
-        unsigned limit_{ limits::Error_Count_Max  };
+        static_assert( app::limits::Max::Error_Count > 0, "Error_Count must be positive" );
+        using Message_ = std::string;
+        Message_ message_;
+        unsigned limit_{ app::limits::Max::Error_Count };
         void throw_exception( ) const;
     public:
+        using Message = Message_;
         Error( ) = default;
-        void add( Message const & message );
+        // modifying methods
+        void add( Message const &message );
+        void reset( );
+        // const methods
         bool has_errors( ) const;
         void check_exception( ) const;
+
     }; // class Error
 
 } // namespace app
