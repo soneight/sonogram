@@ -12,6 +12,7 @@ set( ${SON8PROJ}_LIBRARY_SOURCES
     utility/print.cxx
 )
 add_library( ${SON8PROJ}_library STATIC ${${SON8PROJ}_LIBRARY_SOURCES} )
+target_compile_definitions( ${SON8PROJ}_library PRIVATE SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION )
 target_include_directories( ${SON8PROJ}_library PUBLIC include )
 
 include( FetchContent )
@@ -23,9 +24,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable( son8__mainland )
 
+add_library( ${SON8PROJ}_faceimpl INTERFACE )
+target_include_directories( ${SON8PROJ}_faceimpl INTERFACE face )
+
 set( ${SON8PROJ}_SOURCES main.cxx )
 
 add_executable( ${SON8PROJ} ${${SON8PROJ}_SOURCES} )
+target_compile_definitions( ${SON8PROJ} PRIVATE SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION )
 target_link_libraries( ${SON8PROJ} PRIVATE ${SON8PROJ}_library son8::mainland )
 
 if ( CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/temp/CMakeLists.txt" )

@@ -1,6 +1,10 @@
 #ifndef APP_LIMITS_HXX
 #define APP_LIMITS_HXX
 
+#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
+#error "File is subject to be removed. Use source/face/app/limits.hxx instead."
+#endif
+
 #include <cassert>
 
 namespace app::limits {
