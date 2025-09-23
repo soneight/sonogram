@@ -1,6 +1,10 @@
 #ifndef APP_UTILITY_PRINT_HXX
 #define APP_UTILITY_PRINT_HXX
 
+#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
+#error "File is subject to be removed. Use source/face/app/utility/print.hxx instead."
+#endif
+
 #include <app/tokenizer/token.hxx>
 
 #include <iosfwd>

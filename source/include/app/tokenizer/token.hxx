@@ -1,6 +1,10 @@
 #ifndef APP_TOKENIZER_TOKEN_HXX
 #define APP_TOKENIZER_TOKEN_HXX
 
+#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
+#error "File is subject to be removed. Use source/face/app/lexer/token.hxx instead."
+#endif
+
 #include <app/alias.hxx>
 
 #include <array>
