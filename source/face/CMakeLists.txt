@@ -1,4 +1,4 @@
-add_library( ${SON8PROJ}_faceimpl_interface INTERFACE
+target_sources( ${SON8PROJ}_faceimpl PRIVATE
     app.hxx
     app/alias.hxx
     app/lexer.hxx
@@ -6,5 +6,6 @@ add_library( ${SON8PROJ}_faceimpl_interface INTERFACE
     app/limits.hxx
     app/utility/error.hxx
     app/utility/print.hxx
+    dirty/parser.hxx
 )
-target_link_libraries( ${SON8PROJ}_faceimpl INTERFACE ${SON8PROJ}_faceimpl_interface )
+target_include_directories(${SON8PROJ}_faceimpl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

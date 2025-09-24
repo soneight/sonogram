@@ -1,18 +1,15 @@
-#ifndef APP_PARSER_HXX
-#define APP_PARSER_HXX
+#ifndef DIRTY_PARSER_HXX
+#define DIRTY_PARSER_HXX
 
-#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
-#error "File is subject to be removed. Use source/face/dirty/parser.hxx instead."
-#endif
-
-#include <app/tokenizer.hxx>
+#include <app/lexer.hxx> // Tokens
 #include <app/utility/error.hxx>
 #include <app/utility/print.hxx>
 
 #include <stdexcept>
 #include <string>
 
-namespace app {
+namespace dirty {
+    using namespace app;
     // TODO: for now dirty implementation for see how to better organize code later
     class Parser {
         enum class Context {
@@ -32,7 +29,7 @@ namespace app {
         Context context_{ Context::Global };
         // utility functions
         void add_error( String const &message ) {
-            error_.add( message + ", but got " + ( pos_ != end_ ? app::to_string( *pos_ ) : "nothing") );
+            error_.add( message + ", but got " + ( pos_ != end_ ? app::to_string( *pos_ ) : "NOTHING!") );
         }
         // processing functions
         void process_global( ) {
@@ -110,4 +107,4 @@ namespace app {
     }; // class Parser
 }
 
-#endif//APP_PARSER_HXX
+#endif//DIRTY_PARSER_HXX
