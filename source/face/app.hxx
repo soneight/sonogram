@@ -3,6 +3,7 @@
 
 #include <app/alias.hxx>
 #include <app/limits.hxx>
+#include <app/lexer.hxx>
 #include <app/lexer/token.hxx>
 #include <app/utility/error.hxx>
 #include <app/utility/print.hxx>
