@@ -1,6 +1,8 @@
 #ifndef APP_HXX
 #define APP_HXX
 
+// IMPORTANT dirty implementation headers and namespaces not allowed here
+//    because it would be refactored out later into app namespace
 #include <app/alias.hxx>
 #include <app/limits.hxx>
 #include <app/lexer.hxx>

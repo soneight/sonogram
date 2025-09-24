@@ -1,9 +1,9 @@
 // own header
-#include <app/utility/error.hxx>
+#include <app/utility/error.hxx> // Error
 // app headers
-#include <app/limits.hxx>
+#include <app/limits.hxx> // Error_Count
 // std headers
-#include <stdexcept>
+#include <stdexcept> // std::runtime_error
 
 namespace app {
 

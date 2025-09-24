@@ -1,5 +1,5 @@
 // own header
-#include <app/lexer/token.hxx> // class Token
+#include <app/lexer/token.hxx> // Token
 // app headers
 #include <app/limits.hxx> // limits::Max
 // std headers
@@ -33,6 +33,7 @@ namespace app {
         assert( !value_.empty( ) );
         return value_;
     }
+
     auto Token::line( ) const -> alias::Line {
         assert( line_ != 0 && line_ <= limits::Max::Lines_Count );
         return line_;

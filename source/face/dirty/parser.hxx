@@ -1,7 +1,7 @@
 #ifndef DIRTY_PARSER_HXX
 #define DIRTY_PARSER_HXX
 
-#include <app/lexer.hxx> // Tokens
+#include <app/lexer.hxx>
 #include <app/utility/error.hxx>
 #include <app/utility/print.hxx>
 
@@ -11,7 +11,7 @@
 namespace dirty {
     using namespace app;
     // TODO: for now dirty implementation for see how to better organize code later
-    class Parser {
+    class Parser final {
         enum class Context {
             Global,
             Statement,
@@ -109,3 +109,5 @@ namespace dirty {
 } // namespace dirty
 
 #endif//DIRTY_PARSER_HXX
+
+// Ⓒ 2025 Oleg'Ease'Kharchuk ᦒ

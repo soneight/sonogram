@@ -2,6 +2,7 @@
 #define DIRTY_COMPILER_HXX
 
 #include <app/lexer.hxx>
+#include <dirty/parser.hxx>
 
 #include <string>
 #include <fstream>
@@ -11,7 +12,7 @@
 
 namespace dirty {
     using namespace app;
-    class Compiler {
+    class Compiler final {
         using String = std::string;
         String source_;
         String output_;

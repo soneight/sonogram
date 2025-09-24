@@ -8,7 +8,7 @@
 
 namespace app {
 
-    class Token {
+    class Token final {
         using Value_ = std::string_view;
         enum class Kind_ : alias::Unt1 {
             IdentifierDefault,
