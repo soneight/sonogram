@@ -27,8 +27,8 @@ add_subdirectory( face )
 add_subdirectory( impl )
 # main executable
 add_executable( ${SON8PROJ} main.cxx )
-target_compile_definitions( ${SON8PROJ} PRIVATE SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION )
-target_link_libraries( ${SON8PROJ} PRIVATE ${SON8PROJ}_library son8::mainland )
+# target_compile_definitions( ${SON8PROJ} PRIVATE SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION )
+target_link_libraries( ${SON8PROJ} PRIVATE ${SON8PROJ}_faceimpl son8::mainland )
 # temporary files for testing purposes
 if ( CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/temp/CMakeLists.txt" )
     add_subdirectory(temp)
