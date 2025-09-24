@@ -1,5 +1,5 @@
 # SONOGRAM
-> Programming language compiler written in C++17 that translates its source code to C++17 and NASM assembly.
+> Programming language compiler written in C++17 that translates its source code to C++17.
 
 
 
