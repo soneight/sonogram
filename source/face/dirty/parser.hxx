@@ -105,6 +105,7 @@ namespace dirty {
             return program_name_;
         }
     }; // class Parser
-}
+
+} // namespace dirty
 
 #endif//DIRTY_PARSER_HXX

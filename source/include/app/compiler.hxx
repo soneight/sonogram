@@ -1,6 +1,10 @@
 #ifndef APP_COMPILER_HXX
 #define APP_COMPILER_HXX
 
+#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
+#error "File is subject to be removed. Use source/face/dirty/compiler.hxx instead."
+#endif
+
 #include <string>
 #include <utility>
 
