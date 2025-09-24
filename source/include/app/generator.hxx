@@ -1,6 +1,6 @@
 #ifndef APP_GENERATOR_HXX
 #define APP_GENERATOR_HXX
-
+#error "File is subject to be removed. No alternatives provided!"
 #include <app/tokenizer.hxx>
 
 #include <string>

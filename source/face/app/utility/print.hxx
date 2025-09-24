@@ -1,14 +1,10 @@
 #ifndef APP_UTILITY_PRINT_HXX
 #define APP_UTILITY_PRINT_HXX
-
-#ifndef SON8_SONOGRAM_INCLUDE_OLD_IMPLEMENTATION
-#error "File is subject to be removed. Use source/face/app/utility/print.hxx instead."
-#endif
-
-#include <app/tokenizer/token.hxx>
-
-#include <iosfwd>
-#include <string>
+// app headers
+#include <app/lexer/token.hxx> // class Token
+// std headers
+#include <iosfwd> // std::ostream
+#include <string> // std::string
 
 namespace app {
 
@@ -18,6 +14,8 @@ namespace app {
     std::ostream &operator<<( std::ostream &os, Token::Kind kind );
     std::ostream &operator<<( std::ostream &os, Token const &token );
 
-}
+} // namespace app
 
 #endif//APP_UTILITY_PRINT_HXX
+
+// Ⓒ 2025 Oleg'Ease'Kharchuk ᦒ
