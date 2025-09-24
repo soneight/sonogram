@@ -1,17 +1,20 @@
 #ifndef APP_UTILITY_ERROR_HXX
 #define APP_UTILITY_ERROR_HXX
 // app headers
-#include <app/limits.hxx>
+#include <app/alias.hxx> // Unt0
+#include <app/limits.hxx> // Error_Count
 // std headers
-#include <string>
+#include <string> // std::string
 
 namespace app {
 
     class Error final {
         static_assert( app::limits::Max::Error_Count > 0, "Error_Count must be positive" );
         using Message_ = std::string;
+        // data members
         Message_ message_;
-        unsigned limit_{ app::limits::Max::Error_Count };
+        alias::Unt0 limit_{ app::limits::Max::Error_Count };
+        // private methods
         void throw_exception( ) const;
     public:
         using Message = Message_;
@@ -22,7 +25,6 @@ namespace app {
         // const methods
         bool has_errors( ) const;
         void check_exception( ) const;
-
     }; // class Error
 
 } // namespace app

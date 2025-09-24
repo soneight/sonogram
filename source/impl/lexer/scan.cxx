@@ -1,7 +1,7 @@
 // own header
-#include <app/lexer.hxx>
+#include <app/lexer.hxx> // Lexer
 // app headers
-#include <app/lexer/token.hxx> // class Token
+#include <app/lexer/token.hxx> // Token
 // std headers
 
 namespace app {
@@ -18,7 +18,7 @@ namespace app {
     }
 
     void Lexer::scan_string( ) {
-        Pos to = pos_ + 1;
+        Pos_ to = pos_ + 1;
         while ( in_source( to ) && source_[to] != '"' ) {
             if ( source_[to] == '\n' ) {
                 add_error( "New line before closing string literal" );
@@ -31,7 +31,7 @@ namespace app {
     }
 
     void Lexer::scan_keyword( ) {
-        Pos to = pos_ + 1;
+        Pos_ to = pos_ + 1;
         while ( in_source( to ) && Token::is_identifier_edge( source_[to] ) ) ++to;
         Source keyword{ source_.substr( pos_, to - pos_ ) };
 
@@ -45,7 +45,7 @@ namespace app {
     }
 
     void Lexer::scan_identifier( ) {
-        Pos to = pos_ + 1;
+        Pos_ to = pos_ + 1;
         while ( in_source( to ) && Token::is_identifier( source_[to] ) ) ++to;
         if ( source_[to - 1] == '_' ) {
             column_ += to - pos_ - 1;

@@ -1,8 +1,8 @@
 // own header
-#include <app/utility/print.hxx>
+#include <app/utility/print.hxx> // to_string, operator<<
 // app headers
 #include <app/alias.hxx> // Size
-#include <app/lexer/token.hxx> // class Token
+#include <app/lexer/token.hxx> // Token
 // std headers
 #include <array> // std::array
 #include <cassert> // assert
@@ -43,15 +43,16 @@ namespace app {
         return result;
     }
 
-    std::ostream &operator<<( std::ostream &os, Token::Kind kind ) {
+    auto operator<<( std::ostream &os, Token::Kind kind ) -> std::ostream & {
         os << to_string( kind );
         return os;
     }
 
-    std::ostream &operator<<( std::ostream &os, Token const &token ) {
+    auto operator<<( std::ostream &os, Token const &token ) -> std::ostream & {
         os << to_string( token );
         return os;
     }
-}
+
+} // namespace app
 
 // Ⓒ 2025 Oleg'Ease'Kharchuk ᦒ

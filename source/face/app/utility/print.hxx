@@ -11,8 +11,8 @@ namespace app {
     auto to_string( Token::Kind kind ) -> std::string;
     auto to_string( Token const &token ) -> std::string;
 
-    std::ostream &operator<<( std::ostream &os, Token::Kind kind );
-    std::ostream &operator<<( std::ostream &os, Token const &token );
+    auto operator<<( std::ostream &os, Token::Kind kind ) -> std::ostream &;
+    auto operator<<( std::ostream &os, Token const &token ) -> std::ostream &;
 
 } // namespace app
 

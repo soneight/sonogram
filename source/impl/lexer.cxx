@@ -1,20 +1,19 @@
 // own header
-#include <app/lexer.hxx>
+#include <app/lexer.hxx> // Lexer
 // app headers
 #include <app/alias.hxx> // Char, Size
-#include <app/lexer/token.hxx>
+#include <app/lexer/token.hxx> // Token
 // std headers
-#include <array>
-#include <cctype>
-#include <string>
-#include <stdexcept>
+#include <cctype> // std::isspace
+#include <string> // std::to_string
+#include <stdexcept> // std::runtime_error
 
 namespace app {
 
     Lexer::Lexer( Source source ) : source_( source ) {
         if ( source_.back( ) != '\n' ) throw std::runtime_error( "Source must end with a new line" );
         tokens_.reserve( source.size( ) / 8 ); // rough estimate
-        while ( nextchar( ), pos_ != EndPos ) {
+        while ( nextchar( ), pos_ != EndPos_ ) {
             alias::Char ch = source_[pos_];
             if ( Token::is_single( ch ) ) {
                 scan_single( );
@@ -33,7 +32,7 @@ namespace app {
         error_.check_exception( );
     }
 
-    void Lexer::add_token( Token::Kind kind, Pos to ) {
+    void Lexer::add_token( Token::Kind kind, Pos_ to ) {
         alias::Size size = to - pos_;
         tokens_.emplace_back( kind, source_.substr( pos_, size ), line_, column_ );
         pos_ += size;
@@ -44,7 +43,7 @@ namespace app {
         error_.add( "\t" + message + ", Ln: " + std::to_string( line_ ) + ", Col: " + std::to_string( column_ ) );
     }
 
-    bool Lexer::in_source( Pos from ) const {
+    bool Lexer::in_source( Pos_ from ) const {
         return from < source_.size( );
     }
 
@@ -64,7 +63,7 @@ namespace app {
                 return;
             }
         }
-        pos_ = EndPos;
+        pos_ = EndPos_;
     }
 
 } // namespace app
