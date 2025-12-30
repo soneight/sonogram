@@ -1,8 +1,6 @@
 # SONOGRAM
 > Programming language compiler written in C++17 that translates its source code to C++17.
 
-
-
 ## Introduction
 > this design is my first ever language design attempt,
 > so current wording can be ambiguous, misleading, and confusing.
@@ -131,6 +129,15 @@ The -cast specifier relaxes restrictions on type conversions based on context:,
 ### Arithmetic
 > no unary ~~plus~~ and ~~minus~~ (hate those guys)
 
+Added: unary operators are allowed! Just unary operators like:
+`-`, `+`, `!` should appear as as suffix (instead of prefix like in C/C++)
+so  son `a!` equal to `!a` in C++.
+
+Reason: almost all operators like `()` (function call) `[]` (array subscript)
+`{}` initialization, `.` class member access that solely operate on single
+argument are suffix ones, so making unary operators be also suffix brings more
+CONSISTENCY.
+
 | arithmetic | Description |
 |------------|-------------|
 | `+`        | Addition binary, `a + b` |
@@ -147,8 +154,8 @@ The -cast specifier relaxes restrictions on type conversions based on context:,
 
 | equality | Description |
 |----------|-------------|
-| `==`       | Equal, true if both equal |
-| `!=`       | Not equal, true if both different |
+| `==`      | Equal, true if both equal |
+| `!=`      | Not equal, true if both different |
 | `!<`      | Not less-than, same as `>=` |
 | `!>`      | Not greater-than, same as `<=` |
 | `<=`      | Less-than or equal |
