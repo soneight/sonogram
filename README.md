@@ -86,14 +86,14 @@ Array type is declared by appending `[]` to any built-in type (e.g., `int2[]`).
 
 | specifier | Description |
 |-----------|-------------|
-| `ref`     | Constant reference type (always const, opposite to `-ptr`) |
-| `ptr`     | Variable indicator type (cannot be const and point to const values, opposite to `-ref`) |
-| `out`     | Variable reference type |
-| `fwd`     | Variable forwarder type (move semantics from C++, not sure to support it) |
-| `ref[]`   | Array of constant references |
-| `ptr[]`   | Array of variable indicators |
-| `out[]`   | Array of variable references |
-| `fwd[]`   | Array of variable forwarders |
+| `ref`     | `Constant reference type` (always const, opposite to `-ptr`) |
+| `ptr`     | `Variable indicator type` (cannot be const and point to const values, opposite to `-ref`) |
+| `out`     | `Variable reference type` |
+| `fwd`     | `Variable forwarder type` (move semantics from C++, not sure to support it) |
+| `ref[]`   | Array of `constant references` |
+| `ptr[]`   | Array of `variable indicators` |
+| `out[]`   | Array of `variable references` |
+| `fwd[]`   | Array of `variable forwarders` |
 
 ## Literals
 > simply for most part equivalent to C/C++ literals
