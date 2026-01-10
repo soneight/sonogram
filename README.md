@@ -18,7 +18,7 @@
 - **2033-08-08**: _Official release_.
 
 ## Comments
-> single line comments start with `# ` or with copyright symbol `Ⓒ ` (U+24B8) followed by space
+> single line comments start with `# ` or with copyright symbol `Ⓒ ` (U+24B8), both followed by space
 
 > multi-line comments start with ~~(`#:` and end with `;#`)~~
 
@@ -129,6 +129,13 @@ The -cast specifier relaxes restrictions on type conversions based on context:,
 ## Operators
 > almost all operators are two characters for consistency,
 > except basic mathematical ones `+`, `-`, `*`, and `/`
+
+### Precedence
+> idea: to change default precedence (which would be defined later) wrap `binary` operator inside round brackets `()`
+
+```son
+a-real{ 2 * 2 (/) 8 ((+)) 2 } # means: 2 * (2 / (8 + 2))
+```
 
 ### Arithmetic
 > no unary ~~plus~~ and ~~minus~~ (hate those guys)
