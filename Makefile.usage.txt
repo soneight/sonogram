@@ -1,0 +1,7 @@
+Commands
+   usage: make [command]
+   cmake: configure project
+   ninja: generate project
+   clean: remove build
+   build: (cmake->ninja)
+   allin: (clean->build)
