@@ -1,6 +1,8 @@
 #ifndef APP_HXX
 #define APP_HXX
 
+#define APP_PROC void
+
 namespace app {
 
 } // namespace app
