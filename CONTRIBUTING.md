@@ -22,7 +22,7 @@ add similar comment matching the Licensor template, but include an additional em
 GNU Affero General Public License v3.0 or later
 NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>
 SPDX-License-Identifier: AGPL-3.0-or-later
-app: [`NAME`] [LEGEND]
+app: `sonogram` Programming Language Transpiler
 
 [CONTRIBUTOR COPYRIGHT NOTICE]
 ```
@@ -36,6 +36,6 @@ source code files should end with comment about `license` name, `warranty` detai
 GNU Affero General Public License v3.0 or later
 NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>
 SPDX-License-Identifier: AGPL-3.0-or-later
-app: [`NAME`] [LEGEND]
-Ⓒ Copyright (C) [YEAR] Oleg'Ease'Kharchuk ᦒ
+app: `sonogram` Programming Language Transpiler
+Ⓒ Copyright (C) 2026 Oleg'Ease'Kharchuk ᦒ
 ```

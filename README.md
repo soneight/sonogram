@@ -1,7 +1,7 @@
-# TEMPLATE
-> Project Legend
+# SONOGRAM
+> Programming Language Transpiler
 
-Project Overview
+Written in C++17 that transpile source code to C++17
 
 ## [CONTRIBUTING](./CONTRIBUTING.md)
 > Project Contribution Rules
