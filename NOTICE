@@ -34,6 +34,12 @@ Dependencies:
 ---- mainland
 soneight/mainland C++17 Main Function Wrapper
 Ⓒ Copyright (c) 2025-2026 Oleg'Ease'Kharchuk ᦒ
+---- c_header
+soneight/c_header C++17 Standard C Entities Namespace
+Ⓒ Copyright (c) 2024-2026 Oleg'Ease'Kharchuk ᦒ
+---- cxx_unit
+soneight/cxx_unit C++17 Standard CXX Entities Namespace
+Ⓒ Copyright (c) 2026 Oleg'Ease'Kharchuk ᦒ
 ---- NOTICE FROM ALL SONEIGHT DEPENDENCIES THAT LISTED ABOVE
     This project is licensed under the Apache License, Version 2.0.
     Full license text is available in the root LICENSE file.

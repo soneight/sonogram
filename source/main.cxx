@@ -1,13 +1,21 @@
 #include <app.hxx>
 // son8
+#include <son8/cxx/file.hxx>
+#include <son8/cxx/flow.hxx>
 #include <son8/main.hxx>
-// std
-#include <iostream>
 
 APP_PROC son8::main( Args args ) try {
-   std::cout << "sonogram" << std::endl;
+   cxx::cout << "sonogram" << cxx::endl;
+   // validate arguments
+   if ( args.size( ) != 2 ) throw cxx::runtime_error{ "expect exactly one argument" };
+   auto fileName = *( args.begin( ) + 1 );
+   namespace fs = cxx::filesystem;
+   app::Size fileSize = fs::file_size( fileName );
+   if ( app::Max::File_Size < fileSize ) throw cxx::runtime_error{ "source file are too big" };
+} catch ( cxx::exception const &e ) {
+   cxx::cerr << "son8::main: cxx::exception: " << e.what( ) << cxx::endl;
 } catch ( ... ) {
-   std::cerr << "... uncaught exception" << std::endl;
+   cxx::cerr << "... uncaught exception" << cxx::endl;
 }
 
 // GNU Affero General Public License v3.0 or later

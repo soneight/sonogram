@@ -1,10 +1,20 @@
 #ifndef APP_HXX
 #define APP_HXX
 
+#include <son8/c/base.hxx>
+
 #define APP_PROC void
+#define APP_DATA static constexpr auto
 
 namespace app {
-
+   // type aliases
+   using Size = son8::c::size_t;
+   // maximum limits
+   class Max final {
+      APP_DATA s = 0b1ull;
+   public:
+      APP_DATA File_Size = Size{ s << 10u };
+   };
 } // namespace app
 
 #endif//APP_HXX
