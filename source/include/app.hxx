@@ -9,13 +9,16 @@
 #include <son8/cxx/text.hxx>
 // -- mainland
 #include <son8/main.hxx>
+// -- core_lib
+#include <son8/core.hxx>
 // macros
 #define APP_PROC void
 #define APP_DATA static constexpr auto
 
 namespace app {
    using namespace son8;
-   template < typename Type > using Ref = Type const &;
+   using namespace son8::core; // for Ptr, Out, Uni, Ref
+
    // type aliases
    // -- fundamental
    using Char = unsigned char;
@@ -41,18 +44,22 @@ namespace app {
       bool assigned_{ };
       String data_;
    public:
+      // default
       Source( ) = default;
      ~Source( ) = default;
-      Source( Source &&move ) = delete;
+      // delete
+      Source( Uni< Source > move ) = delete;
       Source( Ref< Source > copy ) = delete;
       auto operator=( Ref< Source > copy ) = delete;
-      Source( String &&str ) noexcept : data_{ son8::cxx::move( str ) } { }
-      void operator=( Source &&move ) {
+      // impl
+      Source( Uni< String > str ) noexcept : data_{ son8::cxx::move( str ) } { }
+      void operator=( Uni< Source > move ) {
          if ( assigned_ ) throw cxx::runtime_error{ "Source could be assigned only once" };
          data_ = cxx::move( move.data_ );
          assigned_ = true;
       }
-      Ref< String > get( ) { return data_; }
+      // a
+      Ref< String > get( ) const { return data_; }
    };
 } // namespace app
 
