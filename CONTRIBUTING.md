@@ -39,3 +39,37 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 app: `sonogram` Programming Language Transpiler
 Ⓒ Copyright (C) 2026 Oleg'Ease'Kharchuk ᦒ
 ```
+
+## Presets
+> CMake building with dependencies
+
+for building consider clone dependencies to separate directories and add `CMakeUserPresets.json` to avoiding fetching on clean rebuilds
+
+```json
+{
+    "version": 2,
+    "configurePresets": [{
+        "name": "local-base_",
+        "hidden": true,
+        "cacheVariables": {
+            "FETCHCONTENT_SOURCE_DIR_[CMake Target Name 1]": "path to target source directory",
+            "FETCHCONTENT_SOURCE_DIR_[...................]": "path to target source directory",
+            "FETCHCONTENT_SOURCE_DIR_[CMake Target Name N]": "path to target source directory"
+        }
+    }, {
+        "name": "local-debug",
+        "inherits": [ "local-base_", "debug" ],
+        "displayName": "Local Debug",
+        "binaryDir": "${sourceDir}/temp/presets_/local-debug"
+    }, {
+        "name": "local-flash",
+        "inherits": [ "local-base_", "flash" ],
+        "displayName": "Local Flash",
+        "binaryDir": "${sourceDir}/temp/presets_/local-flash"
+    }],
+    "buildPresets": [
+        { "name":"local-debug", "configurePreset": "local-debug" },
+        { "name":"local-flash", "configurePreset": "local-flash" }
+    ]
+}
+```
