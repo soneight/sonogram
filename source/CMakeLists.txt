@@ -42,8 +42,20 @@ if( NOT TARGET son8__cxx_unit )
     fetchcontent_makeavailable( son8__cxx_unit )
 endif( )
 message( STATUS "${APP}: found `son8__cxx_unit` target" )
+# -- core_lib
+if( NOT TARGET son8__core_lib )
+    include( FetchContent )
+    message( STATUS "${APP}: FetchContent `soneight/core_lib`" )
+    fetchcontent_declare(
+        son8__core_lib
+        GIT_REPOSITORY https://github.com/soneight/core_lib.git
+        GIT_TAG        9c87cb245d3ab8c60565eca487214d7192d35266 # v0.0.1
+    )
+    fetchcontent_makeavailable( son8__core_lib )
+endif( )
+message( STATUS "${APP}: found `son8__core_lib` target" )
 
-target_link_libraries( ${APP} PRIVATE ${APP_LIB} son8::mainland son8::c_header son8::cxx_unit )
+target_link_libraries( ${APP} PRIVATE ${APP_LIB} son8::mainland son8::c_header son8::cxx_unit son8::core_lib )
 
 # GNU Affero General Public License v3.0 or later
 # NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>

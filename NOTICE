@@ -40,6 +40,9 @@ soneight/c_header C++17 Standard C Entities Namespace
 ---- cxx_unit
 soneight/cxx_unit C++17 Standard CXX Entities Namespace
 Ⓒ Copyright (c) 2026 Oleg'Ease'Kharchuk ᦒ
+---- core_lib
+soneight/core_lib C++17 Core Library
+Ⓒ Copyright (c) 2026 Oleg'Ease'Kharchuk ᦒ
 ---- NOTICE FROM ALL SONEIGHT DEPENDENCIES THAT LISTED ABOVE
     This project is licensed under the Apache License, Version 2.0.
     Full license text is available in the root LICENSE file.
