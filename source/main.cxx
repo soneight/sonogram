@@ -4,14 +4,14 @@ using Str = app::String;
 static app::Source GlobalSourceWrite_;
 static app::Ref< Str > Global_Source_Read = GlobalSourceWrite_.get( );
 
-APP_PROC son8::main( Args args ) try {
+void son8::main( Args args ) try {
    auto constexpr New_Line = '\n';
    cxx::cout << "sonogram:\n";
    cxx::cout << "-- Max File Size: " << app::Max::print( app::Max::File_Size ) << New_Line;
    cxx::cout << "-- Max Line Length: " << app::Max::print( app::Max::Line_Length ) << New_Line;
    cxx::cout << cxx::endl;
    // validate arguments
-   using Err = cxx::runtime_error;
+   using app::Err;
    if ( args.size( ) != 2 ) throw Err{ "expect exactly one argument" };
    auto fileName = *( args.begin( ) + 1 );
    namespace fs = cxx::filesystem;
@@ -22,18 +22,18 @@ APP_PROC son8::main( Args args ) try {
    File sourceFile{ fileName, cxx::ios::binary };
    if ( not sourceFile.is_open( ) ) throw Err{ "source file cannot be open" };
    // check last byte for new line character
-   auto isFileEndsWithNewLine = []( File &file ) -> bool {
+   auto isFileCorrect = []( app::Out< File > file ) -> bool {
       auto lastByte = file.seekg( -1, cxx::ios::end ).get( );
-      file.seekg( 0, cxx::ios::beg );
-      return lastByte == New_Line;
+      auto firstByte = file.seekg( 0, cxx::ios::beg ).peek( );
+      return firstByte != New_Line && lastByte == New_Line;
    };
-   if ( not isFileEndsWithNewLine( sourceFile ) ) throw Err{ "source file does not ends with new line character" };
+   if ( not isFileCorrect( sourceFile ) ) throw Err{ "source file begin or does not ends with new line character" };
    // read whole file
    using ItStreamBuf = cxx::istreambuf_iterator< typename File::char_type >;
    GlobalSourceWrite_ = Str{ ItStreamBuf{ sourceFile }, ItStreamBuf{ } };
    sourceFile.close( );
    // validate maximum line length
-   auto isLineLengthValid = []( app::Ref< Str > str, auto max ) -> bool {
+   auto isLineLengthValid = []( app::Ref< Str > str, app::Size max ) -> bool {
       auto const end = str.end( );
       auto beg = str.begin( );
       auto it = beg;
@@ -54,7 +54,7 @@ APP_PROC son8::main( Args args ) try {
       // \ fast-paths if landing exactly on new line
       // \ falls back to `found` backtracking helper
       while ( it < end ) {
-         if ( end - it <= max ) return true;
+         if ( APP_CAST( app::Size, end - it ) <= max ) return true;
          it += max;
          if ( *it == New_Line ) {
             beg = ++it;
@@ -68,7 +68,11 @@ APP_PROC son8::main( Args args ) try {
    app::Ref< Str > source = Global_Source_Read;
    if ( not isLineLengthValid( source, app::Max::Line_Length ) ) throw Err{ "source file contains lines with length exceeding maximum limit" };
    // TODO process file
-   cxx::cout << source << cxx::endl;
+   auto tokens = app::lex_tokens( source );
+   for ( app::Token::Ref token : tokens ) {
+      cxx::cout << app::to_string( token ) << New_Line;
+   }
+   cxx::cout << cxx::endl;
 } catch ( app::Ref< cxx::exception > e ) {
    cxx::cerr << "son8::main: cxx::exception: " << e.what( ) << cxx::endl;
 } catch ( ... ) {
