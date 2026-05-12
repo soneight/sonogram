@@ -1,5 +1,5 @@
 # SONOGRAM
-> Programming Language Transpiler
+> C++17 Programming Language Transpiler
 
 Written in C++17 that transpile source code to C++17
 

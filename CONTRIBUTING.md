@@ -22,7 +22,7 @@ add similar comment matching the Licensor template, but include an additional em
 GNU Affero General Public License v3.0 or later
 NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>
 SPDX-License-Identifier: AGPL-3.0-or-later
-app: `sonogram` Programming Language Transpiler
+app: `sonogram` C++17 Programming Language Transpiler
 
 [CONTRIBUTOR COPYRIGHT NOTICE]
 ```
@@ -36,7 +36,7 @@ source code files should end with comment about `license` name, `warranty` detai
 GNU Affero General Public License v3.0 or later
 NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>
 SPDX-License-Identifier: AGPL-3.0-or-later
-app: `sonogram` Programming Language Transpiler
+app: `sonogram` C++17 Programming Language Transpiler
 Ⓒ Copyright (C) 2026 Oleg'Ease'Kharchuk ᦒ
 ```
 
@@ -52,9 +52,10 @@ for building consider clone dependencies to separate directories and add `CMakeU
         "name": "local-base_",
         "hidden": true,
         "cacheVariables": {
-            "FETCHCONTENT_SOURCE_DIR_[CMake Target Name 1]": "path to target source directory",
-            "FETCHCONTENT_SOURCE_DIR_[...................]": "path to target source directory",
-            "FETCHCONTENT_SOURCE_DIR_[CMake Target Name N]": "path to target source directory"
+            "FETCHCONTENT_SOURCE_DIR_SON8__MAINLAND": "/path/to/source/directory",
+            "FETCHCONTENT_SOURCE_DIR_SON8__C_HEADER": "/path/to/source/directory",
+            "FETCHCONTENT_SOURCE_DIR_SON8__CXX_UNIT": "/path/to/source/directory",
+            "FETCHCONTENT_SOURCE_DIR_SON8__CORE_LIB": "/path/to/source/directory"
         }
     }, {
         "name": "local-debug",
