@@ -1,76 +1,34 @@
 #ifndef APP_HXX
 #define APP_HXX
+
+#include <app/alias.hxx>
+#include <app/limits.hxx>
+#include <app/locale.hxx>
+#include <app/token.hxx>
+#include <app/util.hxx>
 // son8
 // -- c
 #include <son8/c/byte.hxx>
 // -- cxx
 #include <son8/cxx/data.hxx>
 #include <son8/cxx/file.hxx>
-#include <son8/cxx/flow.hxx>
-#include <son8/cxx/func.hxx>
-#include <son8/cxx/text.hxx>
-// -- mainland
-#include <son8/main.hxx>
-// -- core_lib
-#include <son8/core.hxx>
-// macros
-#define APP_ASSERT assert
-#define APP_CAST( type, value ) static_cast< type >( value )
-#define APP_DATA static constexpr auto
-#define APP_FUNC [[nodiscard]] inline auto
-#define APP_LOCALE cxx::locale::classic( )
-#define APP_PROC inline void
 
 namespace app {
-   using namespace son8;
-   using namespace son8::core; // for Ptr, Out, Uni, Ref
-   using namespace cxx::string_view_literals;
-   // type aliases
-   // -- fundamental
-   using Char = unsigned char;
-   using Diff = c::ptrdiff_t;
-   using Int3 = c::int64_t;
-   using Size = c::size_t;
-   using Unt0 = c::uint8_t;
-   using Unt3 = c::uint64_t;
-   // -- classes
-   template< typename Tp, Size Sz >
-   using Array = cxx::array< Tp, Sz >;
-   using Err = cxx::runtime_error;
-   using String = cxx::string;
-   using StringView = cxx::string_view;
-   // long test
-   struct Long {
-      union {
-         Diff diff;
-         Size size;
-      };
-      Long( Diff init ) noexcept : diff{ init } { }
-      Long( Size init ) noexcept : size{ init } { }
-      operator Diff( ) const noexcept { return diff; }
-      operator Size( ) const noexcept { return size; }
-      Diff pun( Diff d ) const noexcept
-      { return *APP_CAST( Ptr< Diff >, c::memcpy( &d, &diff, sizeof( d ) ) ); }
-      Size pun( Size s ) const noexcept
-      { return *APP_CAST( Ptr< Diff >, c::memcpy( &s, &diff, sizeof( s ) ) ); }
-   };
-   APP_FUNC operator<=( Diff d, Long l ) noexcept { return d <= l.pun( d ); }
-   APP_FUNC operator<=( Size s, Long l ) noexcept { return s <= l.pun( s ); }
-   // maximum limits
-   class Max final {
-      APP_DATA s = 0b1ull;
-   public:
-      APP_DATA File_Size = Size{ s << 20u };    // 1 MiB
-      APP_DATA Line_Length = Size{ s << 11u };  // 2 KiB
-      APP_DATA print( unsigned long long i ) -> StringView {
-         switch ( i ) {
-            case 1'048'576u: return "1 MiB"sv;
-            case 2'048u: return "2 KiB"sv;
-            default: APP_ASSERT( false and "unreachable" ); return "error"sv;
-         }
-      }
-   };
 
+   // data aliases (move to core_lib?)
+   template< typename Type >
+   using Dual = cxx::list< Type >;
+   template< typename Type >
+   using Grow = cxx::vector< Type >;
+   template< typename Key, typename Value >
+   using Hash = cxx::unordered_map< Key, Value >;
+   template< typename Key, typename Value >
+   using Keys = cxx::map< Key, Value >;
+   template< typename Type >
+   using Tail = cxx::forward_list< Type >;
+   template< typename Type >
+   using Tidy = cxx::set< Type >;
+   // TODO: this is temporary solution for global source string handling
    class Source final {
       bool assigned_{ };
       String data_;
@@ -93,71 +51,7 @@ namespace app {
       APP_FUNC get( ) const -> Ref< String > { return data_; }
    };
 
-   struct Token final {
-      enum class Kind : Unt0 {
-         Space,
-         Comment,
-         Identifier,
-         // NOTE app types must be contiguous
-         APPTYPES_beg, // skip
-         Apptype_Unknown = APPTYPES_beg,
-         Apptype_Program,
-         APPTYPES_end, // skip
-         // NOTE keywords must be contiguous
-         KEYWORDS_beg = APPTYPES_end, // skip
-         Keyword_Program = KEYWORDS_beg,
-         KEYWORDS_end, // skip
-         // NOTE singles must be contiguous
-         SINGLES_beg = KEYWORDS_end,
-         Scope_Opened = SINGLES_beg,
-         Scope_Closed,
-         SINGLES_end, // skip
-         Error = SINGLES_end,
-         // NOTE must be last
-         Last_
-      };
-      APP_DATA Count = APP_CAST( Size, Kind::Last_ );
-      static_assert( Kind::Last_ == Kind{ Count } );
-      using View = StringView;
-      // keywords helpers
-      struct Keywords final {
-         APP_DATA Beg = APP_CAST( Size, Kind::KEYWORDS_beg );
-         APP_DATA End = APP_CAST( Size, Kind::KEYWORDS_end );
-         APP_DATA Count = End - Beg;
-         using Array_ = Array< View, Count >;
-         APP_DATA Data = Array_{{
-            "-program"sv
-         }};
-         static_assert( Count == Data.size( ) );
-         static auto view_to_kind( View view ) -> Kind {
-            auto it = cxx::find( Data.begin( ), Data.end( ), view );
-            if ( it == Data.end( ) ) throw Err{ "app: tokens unknown keyword" };
-            auto index = cxx::distance( Data.begin( ), it );
-            return APP_CAST( Kind, Beg + index );
-         }
-      };
-
-      // data members
-      using Ref = app::Ref< Token >;
-      View view;
-      Size line;
-      Size coln;
-      Kind kind;
-      // constructors
-      // Token( ) = default;
-      Token( View view, Size line, Size coln, Kind kind )
-      : view{ view }, line{ line }, coln{ coln }, kind{ kind } {  }
-   };
-
-   class Locale final {
-      static inline auto &Facet_ = cxx::use_facet< cxx::ctype< char > >( APP_LOCALE );
-   public:
-      static bool is_alnum( Char ch ) { return Facet_.is( cxx::ctype_base::alnum, ch ); }
-      static bool is_alpha( Char ch ) { return Facet_.is( cxx::ctype_base::alpha, ch ); }
-      static bool is_blank( Char ch ) { return Facet_.is( cxx::ctype_base::blank, ch ); }
-   };
-
-   using Tokens = cxx::vector< Token >;
+   using Tokens = Grow< Token >;
 
    APP_FUNC lex_tokens( Ref< String > str ) -> Tokens {
       // NOTE: not an error as initial file reading should catch this
@@ -186,7 +80,7 @@ namespace app {
          return Token::Kind::Space;
       };
       auto scan_comment = [&]( ) {
-         if ( next_char( ) and not Locale::is_blank( ch ) ) throw Err{ "app::lex_tokens: no space character after comment symbol" };
+         if ( next_char( ) and not Locale::is_blank( ch ) ) throw Error{ "app::lex_tokens: no space character after comment symbol" };
          while ( next_char( ) and not ( ch == '\n' ) );
          return Token::Kind::Comment;
       };
@@ -195,7 +89,7 @@ namespace app {
          while ( next_char( ) and Locale::is_alpha( ch ) );
          auto kind = Token::Keywords::view_to_kind( str.substr( prevPos, pos - prevPos - 1 ) );
          bool isApp = ( kind == Token::Kind::Keyword_Program );
-         if ( isApp and tokens[0].kind != Token::Kind::Apptype_Unknown ) throw Err{ "application type duplicate" };
+         if ( isApp and tokens[0].kind != Token::Kind::Apptype_Unknown ) throw Error{ "app::lex_tokens: application type duplicate" };
          else tokens[0] = Token{ "\0"sv, 0, 0, Token::Kind::Apptype_Program };
          return kind;
       };
@@ -204,7 +98,7 @@ namespace app {
          switch ( ch ) {
          case ':': kind = Token::Kind::Scope_Opened; break;
          case ';': kind = Token::Kind::Scope_Closed; break;
-            default: throw Err{ "app::lex_tokens: unknown character to process" };
+            default: throw Error{ "app::lex_tokens: unknown character to process" };
          }
          next_char( );
          return kind;
@@ -213,7 +107,7 @@ namespace app {
       while ( next_char( ) ) {
          if ( ch == '\n' ) {
             Token::Ref prevToken = tokens.back( );
-            if ( prevToken.kind == Token::Kind::Space ) throw Err{ "app::lex_tokens: trailing whitespace" };
+            if ( prevToken.kind == Token::Kind::Space ) throw Error{ "app::lex_tokens: trailing whitespace" };
             if ( pos >= size ) break; // end of source
             ++curLine;
             curColn = 0;
@@ -267,7 +161,7 @@ namespace app {
       auto itPos = tokens.begin( ) + 1;
       Kind expectKind = Kind::Identifier;
       Token token = tokens.back( );
-      if ( token.kind != Kind::Last_ ) throw Err{ "app::gen_program: tokens does not ends with last terminator" };
+      if ( token.kind != Kind::Last_ ) throw Error{ "app::gen_program: tokens does not ends with last terminator" };
       auto next_token = [&]( ) -> bool {
          token = *itPos++;
          return token.kind != Kind::Last_;
@@ -275,16 +169,16 @@ namespace app {
       int scopeDepth{ };
       auto parse_scope = [&]( int scope ) {
          if ( program.state == State::Global and expectKind != Kind::Scope_Opened ) {
-            throw Err{ "app::gen_program expect open score in global state" };
+            throw Error{ "app::gen_program expect open score in global state" };
          }
          program.state = State::Body;
          int d[2] = { scopeDepth + 1, scopeDepth - 1 };
          scopeDepth = d[scope];
-         if ( scopeDepth < 0 ) throw Err{ "app::gen_program: scope depth negative" };
+         if ( scopeDepth < 0 ) throw Error{ "app::gen_program: scope depth negative" };
       };
       auto parse_program = [&]( ) {
          if ( program.state == State::Global ) {
-            if ( expectKind != Kind::Keyword_Program ) throw Err{ "app::gen_program: expect keyword program in global state" };
+            if ( expectKind != Kind::Keyword_Program ) throw Error{ "app::gen_program: expect keyword program in global state" };
             expectKind = Kind::Scope_Opened;
          }
       };
@@ -304,46 +198,18 @@ namespace app {
          case Kind::Scope_Opened: parse_scope( Scope_Opened ); continue;
          case Kind::Scope_Closed: parse_scope( Scope_Closed ); continue;
          case Kind::Last_: break;
-            default: throw Err{ "app::gen_program token is not supported yet" + to_string( token ) };
+            default: throw Error{ "app::gen_program: token is not supported yet" + to_string( token ) };
          }
          switch ( program.state ) {
             default: continue;
          }
       }
 
-      if ( scopeDepth ) throw Err{ "scope depth not equal zero: " + cxx::to_string( scopeDepth) };
+      if ( scopeDepth ) throw Error{ "app::gen_program: scope depth not equal zero: " + cxx::to_string( scopeDepth) };
 
       return program;
    }
 
-   APP_FUNC to_string( Token::Kind kind ) -> String {
-      using TokenView = Array< Token::View, Token::Count + 1 >;
-      TokenView kinds{{
-         "Spaces"sv,
-         "Comment"sv,
-         "Identifier"sv,
-         "Application Type Unknown"sv,
-         "Application Type Program"sv,
-         "Keyword Program"sv,
-         "Single Scope Begin"sv,
-         "Single Scope End"sv,
-         "Error: Unknown Token"sv,
-         "App Terminator"sv
-      }};
-      return String{ kinds[APP_CAST(Size, kind)] };
-   }
-
-   APP_FUNC to_string( Token const &token ) -> String {
-      String result;
-      auto cb = cxx::to_string( token.coln );
-      auto ce = cxx::to_string( token.coln + token.view.size( ) - 1 );
-      result += "Token{";
-      result += " Kind: " + to_string( token.kind );
-      result += ", View:\"" + String{ token.view } + '"';
-      result += " @" + cxx::to_string( token.line ) + ':' + cb + '-' + ce;
-      result += " }";
-      return result;
-   }
 } // namespace app
 
 #endif//APP_HXX

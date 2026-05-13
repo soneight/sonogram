@@ -1,5 +1,7 @@
-#include "son8/cxx/file.hxx"
 #include <app.hxx>
+// son8
+// -- mainland
+#include <son8/main.hxx>
 
 using Str = app::String;
 static app::Source GlobalSourceWrite_;
@@ -12,30 +14,30 @@ void son8::main( Args args ) try {
    cxx::cout << "-- Max Line Length: " << app::Max::print( app::Max::Line_Length ) << New_Line;
    cxx::cout << cxx::endl;
    // validate arguments
-   using app::Err;
-   if ( args.size( ) != 2 ) throw Err{ "expect exactly one argument" };
+   using app::Error;
+   if ( args.size( ) != 2 ) throw Error{ "expect exactly one argument" };
    auto fileName = *( args.begin( ) + 1 );
    namespace fs = cxx::filesystem;
    app::Size fileSize = fs::file_size( fileName );
-   if ( app::Max::File_Size < fileSize ) throw Err{ "source file size exceeds maximum limit" };
+   if ( app::Max::File_Size < fileSize ) throw Error{ "source file size exceeds maximum limit" };
    // open file
    using InputFile = cxx::ifstream;
    InputFile sourceFile{ fileName, cxx::ios::binary };
-   if ( not sourceFile.is_open( ) ) throw Err{ "source file cannot be open" };
+   if ( not sourceFile.is_open( ) ) throw Error{ "source file cannot be open" };
    // check last byte for new line character
    auto isFileCorrect = []( app::Out< InputFile > file ) -> bool {
       auto lastByte = file.seekg( -1, cxx::ios::end ).get( );
       auto firstByte = file.seekg( 0, cxx::ios::beg ).peek( );
       return firstByte != New_Line && lastByte == New_Line;
    };
-   if ( not isFileCorrect( sourceFile ) ) throw Err{ "source file begin or does not ends with new line character" };
+   if ( not isFileCorrect( sourceFile ) ) throw Error{ "source file begin with or does not ends with new line character" };
    // read whole file
    using ItStreamBuf = cxx::istreambuf_iterator< typename InputFile::char_type >;
    GlobalSourceWrite_ = Str{ ItStreamBuf{ sourceFile }, ItStreamBuf{ } };
    sourceFile.close( );
    // validate maximum line length
-   auto isLineLengthValid = []( app::Ref< Str > str, app::Long max ) -> bool {
-      APP_ASSERT( app::Diff( 0 ) <= max && "app: max cannot be negative" );
+   auto isLineLengthValid = []( app::Ref< Str > str, app::Size max ) -> bool {
+      APP_ASSERT( app::Max::Line_Length <= max && "app: max limit violation" );
       auto const end = str.end( );
       auto beg = str.begin( );
       auto it = beg;
@@ -56,8 +58,7 @@ void son8::main( Args args ) try {
       // \ fast-paths if landing exactly on new line
       // \ falls back to `found` backtracking helper
       while ( it < end ) {
-         //if ( APP_CAST( app::Size, end - it ) <= max ) return true;
-         if ( end - it <= max  ) return true;
+         if ( APP_CAST( app::Size, end - it ) <= max ) return true;
          it += max;
          if ( *it == New_Line ) {
             beg = ++it;
@@ -69,23 +70,19 @@ void son8::main( Args args ) try {
       return true;
    };
    app::Ref< Str > source = Global_Source_Read;
-   if ( not isLineLengthValid( source, app::Max::Line_Length ) ) throw Err{ "source file contains lines with length exceeding maximum limit" };
+   if ( not isLineLengthValid( source, app::Max::Line_Length ) ) throw Error{ "source file contains lines with length exceeding maximum limit" };
    // tokens
    auto tokens = app::lex_tokens( source );
    for ( app::Token::Ref token : tokens ) {
       cxx::cout << app::to_string( token ) << New_Line;
    }
    cxx::cout << cxx::endl;
-   switch ( tokens[0].kind ) {
-      using k = app::Token::Kind;
-      case k::Apptype_Program: break;
-      default: throw Err{ "not correct application type token" };
-   };
+   if ( tokens[0].kind != app::Token::Kind::Apptype_Program ) throw Error{ "not correct application type token" };
    // program
    auto program = gen_program( tokens );
    using OutputFile = cxx::ofstream;
    OutputFile programFile{ fs::current_path( ) / "temp" / ( program.fileName + ".cxx" ), cxx::ios::binary };
-   if ( not programFile.is_open( ) ) throw Err{ "cannot open program file for writing" };
+   if ( not programFile.is_open( ) ) throw Error{ "cannot open program file for writing" };
    programFile << program.mainHead << New_Line;
    programFile << program.mainBody << New_Line;
    programFile << program.mainFoot << New_Line;
