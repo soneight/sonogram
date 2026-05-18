@@ -1,0 +1,12 @@
+# count lines in input
+count_lines-program :
+    { c, nl }-int2-void,
+
+    # -use-std.io,
+    -for nl 0, { c{ get_char( ) } <> EOF } :
+        -case { c == '\n' } :
+            +nl
+        ;
+    ;
+    -echo "{}\n"{ nl }
+;

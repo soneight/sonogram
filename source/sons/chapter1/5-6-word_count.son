@@ -1,0 +1,22 @@
+# count lines, words, and characters in input
+word_count-program :
+    IN-expr 1,   # inside a word
+    OUT-expr 0,  # outside a word
+
+    {c,nl,nw,nc,state}-int2-void,
+
+    state OUT,
+    { nl, nw, nc } 0,
+    # -use std.io,
+    -for { c{ get_char( ) } <> EOF } :
+        +nc,
+        -case { c == '\n' } : +nl ;
+        -case { c == { ' ', '\n', '\t' }-or } :
+            state OUT;
+        -else { state == OUT } :
+            state IN,
+            +nw
+        ;
+    ;
+    -echo `{nl} {nw} {nc}\n`
+;

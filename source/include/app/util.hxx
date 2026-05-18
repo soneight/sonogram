@@ -12,11 +12,49 @@ namespace app {
          "Spaces"sv,
          "Comment"sv,
          "Identifier"sv,
+         "Number"sv,
+         "Unary Plus"sv,
          "Application Type Unknown"sv,
          "Application Type Program"sv,
-         "Keyword Program"sv,
+         "Keyword program"sv,
+         "Keyword echo"sv,
+         "Keyword char"sv,
+         "Keyword int2 Type 32-bit Integer"sv,
+         "Keyword int3 Type 64-bit Integer"sv,
+         "Keyword half Type 32-bit Float"sv,
+         "Keyword real Type 64-bit Double"sv,
+         "Keyword void"sv,
+         "Keyword for"sv,
+         "Keyword case"sv,
+         "Keyword and"sv,
+         "Keyword or"sv,
+         "Keyword in"sv,
+         "Keyword else"sv,
+         "Keyword cast"sv,
+         "Keyword expr"sv,
+         "Keyword func"sv,
+         "Keyword exit"sv,
          "Single Scope Begin"sv,
          "Single Scope End"sv,
+         "Single Expr Begin"sv,
+         "Single Expr End"sv,
+         "Single Func Begin"sv,
+         "Single Func End"sv,
+         "Single Array Begin"sv,
+         "Single Array End"sv,
+         "Single Comma"sv,
+         "Literal Single"sv,
+         "Literal Double"sv,
+         "Literal Grave"sv,
+         "Binary Less Equal"sv,
+         "Binary Less Less"sv,
+         "Binary Equal Equal"sv,
+         "Binary More More"sv,
+         "Binary Not Equal"sv,
+         "Binary Math Multiply"sv,
+         "Binary Math Divide"sv,
+         "Binary Math Plus"sv,
+         "Binary Math Minus"sv,
          "Error: Unknown Token"sv,
          "App Terminator"sv
       }};
@@ -29,7 +67,8 @@ namespace app {
       auto ce = cxx::to_string( token.coln + token.view.size( ) - 1 );
       result += "Token{";
       result += " Kind: " + to_string( token.kind );
-      result += ", View:\"" + String{ token.view } + '"';
+      if ( token.view[0] == '"' ) result += ", View: '" + String{ token.view } + "'";
+      else result += ", View: \"" + String{ token.view } + '"';
       result += " @" + cxx::to_string( token.line ) + ':' + cb + '-' + ce;
       result += " }";
       return result;

@@ -1,0 +1,3 @@
+zero-program:
+# do nothing and return zero (or success status)
+;

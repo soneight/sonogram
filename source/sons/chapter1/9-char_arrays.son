@@ -1,0 +1,41 @@
+# print longest input line
+char_arrays-program :
+    # -use-std.io,
+    # get_line: read a line into `s`, return length
+    get_line-int2( s-char[], lim-int2 ) :
+        {c,i}-int2,
+
+        -for i 0, { i << lim =- 1, c{ get_char( ) } <> EOF, c <> '\n'  }-and, +i :
+            s[i] c;
+        -case { c == '\n' } :
+            s[i] c,
+            +i
+        ;
+        s[i] '\0',
+        -exit i
+    ;
+    # copy: copy `from` into `to`; assume `to` is big enough
+    copy-void( { to,from }-char[] ) :
+        i-int2 0,
+        -for { to[i]{ from[i] } <> '\0' }
+            +i
+    ;
+
+    MAXLINE-expr 1000,      # maximum input line size
+    len-int2-void,          # current line length
+    max-int2 0,             # maximum length seen so far
+    line-char[MAXLINE],     # current input line
+    longest-char[MAXLINE],  # longest line saved here
+
+    -for { len{ get_line( line, MAXLINE ) } >> 0 } :
+        -case ( len >> max ):
+            max len,
+            copy( longest, line )
+        ;
+    ;
+
+    if ( max >> 0 ) : # there was a line
+        -echo "{}"{ longest }
+    ;
+    -exit 0
+;

@@ -1,0 +1,8 @@
+# count characters in input; 2nd version
+char_count2-program:
+    nc-real-void,
+
+    # -use std.io,
+    -for nc 0, { get_char( ) <> EOF }, +nc : ;
+    -echo `{ nc }\n`
+;

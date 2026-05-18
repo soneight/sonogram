@@ -12,6 +12,8 @@ void son8::main( Args args ) try {
    cxx::cout << "sonogram:\n";
    cxx::cout << "-- Max File Size: " << app::Max::print( app::Max::File_Size ) << New_Line;
    cxx::cout << "-- Max Line Length: " << app::Max::print( app::Max::Line_Length ) << New_Line;
+   cxx::cout << "-- Max Scoped Depth: " << app::Max::print( app::Max::Scoped_Depth ) << New_Line;
+   cxx::cout << "-- Max Nested Depth: " << app::Max::print( app::Max::Nested_Depth ) << New_Line;
    cxx::cout << cxx::endl;
    // validate arguments
    using app::Error;

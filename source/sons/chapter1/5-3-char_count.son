@@ -1,0 +1,9 @@
+# count characters in input; 1st version
+char_count-program:
+    nc-int3{ 0 },
+
+    # -use std.io,
+    -for { get_char( ) <> EOF } : +nc ;
+
+    -echo `{ nc }\n`
+;

@@ -1,0 +1,6 @@
+hello2-program :
+    # -use std.io,
+    -echo 'hello, ',
+    -echo 'world',
+    -echo '\n'
+;

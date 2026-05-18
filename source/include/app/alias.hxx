@@ -9,7 +9,12 @@
 
 // macros
 #define APP_LOCALE cxx::locale::classic( )
-#define APP_ASSERT assert
+// -- seperate app asserts from std asserts
+#ifdef APP_DEBUG
+#  define APP_ASSERT assert
+#else
+#  define APP_ASSERT( ignore ) ((void)0)
+#endif//APP_DEBUG
 #define APP_CAST( type, value ) static_cast< type >( ( value ) )
 #define APP_DATA static constexpr auto
 #define APP_FUNC [[nodiscard]] inline auto
@@ -17,6 +22,7 @@
 
 namespace app {
    using namespace son8;
+   using namespace cxx::string_literals;
    using namespace cxx::string_view_literals;
 
    using namespace son8::core; // for Ptr, Out, Uni, Ref

@@ -1,0 +1,11 @@
+# copy input to output; 1st version
+file_copying-program:
+    # io-use std.io,
+
+    c-int2 get_char( ),
+
+    -for { c <> EOF }:
+        put_char( ),
+        c get_char( )
+    ;
+;

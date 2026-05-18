@@ -1,0 +1,19 @@
+# test power function
+functions-program :
+    # power: raise base to n-th power; n >= 0
+    power-int2-func( base-int2, n-int2 ):
+        {i,p}-int2,
+
+        p 1,
+        -for i 1, { i <= n }, +i :
+            p{ p =* base } ; # or: p ** base (son only), eg p *= base (in c only)
+        -exit p
+    ;
+
+    i-int2,
+    -for i 0, { i << 10 }, +i :
+        -echo "{} {} {}\n"{ i, power( 2, i ), power( 3, i ) } # TODO fix to -3 when negative numbers implemented
+    ;
+
+    -exit 0
+;

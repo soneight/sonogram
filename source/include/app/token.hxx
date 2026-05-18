@@ -12,6 +12,8 @@ namespace app {
          Space,
          Comment,
          Identifier,
+         Number,
+         Unary_Plus,
          // NOTE app types must be contiguous
          APPTYPES_beg, // skip
          Apptype_Unknown = APPTYPES_beg,
@@ -20,16 +22,63 @@ namespace app {
          // NOTE keywords must be contiguous
          KEYWORDS_beg = APPTYPES_end, // skip
          Keyword_Program = KEYWORDS_beg,
+         Keyword_Echo,
+         Keyword_Char,
+         Keyword_Int2,
+         Keyword_Int3,
+         Keyword_Half,
+         Keyword_Real,
+         Keyword_Void,
+         Keyword_For,
+         Keyword_Case,
+         Keyword_And,
+         Keyword_Or,
+         Keyword_In,
+         Keyword_Else,
+         Keyword_Cast,
+         Keyword_Expr,
+         Keyword_Func,
+         Keyword_Exit,
          KEYWORDS_end, // skip
-         // NOTE singles must be contiguous
+         // NOTE singles must be contiguous, and open closed
+         // \ brackets must be placed adjacent to each other
          SINGLES_beg = KEYWORDS_end,
          Scope_Opened = SINGLES_beg,
          Scope_Closed,
+         Curly_Opened, // Expr
+         Curly_Closed, // Expr
+         Round_Opened, // Func
+         Round_Closed, // Func
+         Array_Opened,
+         Array_Closed,
+         Single_Comma,
+         Literal_Single,
+         Literal_Double,
+         Literal_Grave,
+         // Literal_Grave,
          SINGLES_end, // skip
-         Error = SINGLES_end,
+         // NOTE binary must be contiguous
+         BINARY_beg = SINGLES_end,
+         Less_Equal = BINARY_beg,
+         Less_Less,
+         Equal_Equal,
+         More_More,
+         Not_Equal,
+         Math_Mulptiply,
+         Math_Divide,
+         Math_Plus,
+         Math_Minus,
+         BINARY_end, // skip
+         Error = BINARY_end,
          // NOTE must be last
          Last_
       };
+      APP_DATA is_bracket_opened( Kind kind ) {
+         // NOTE: determine if bracket is opened `:({[` or close `;)}]`
+         // \ return true if it is an opened bracket checking first bit
+         auto opened_bit = APP_CAST( unsigned, Kind::Scope_Opened ) & 1u;
+         return opened_bit == ( APP_CAST( unsigned, kind ) & 1u );
+      }
       APP_DATA Count = APP_CAST( Size, Kind::Last_ );
       static_assert( Kind::Last_ == Kind{ Count } );
       using View = StringView;
@@ -40,12 +89,29 @@ namespace app {
          APP_DATA Count = End - Beg;
          using Array = Flat< View, Count >;
          APP_DATA Data = Array{{
-            "-program"sv
+            "-program"sv,
+            "-echo"sv,
+            "-char"sv,
+            "-int2"sv,
+            "-int3"sv,
+            "-half"sv,
+            "-real"sv,
+            "-void"sv,
+            "-for"sv,
+            "-case"sv,
+            "-and"sv,
+            "-or"sv,
+            "-in"sv,
+            "-else"sv,
+            "-cast"sv,
+            "-expr"sv,
+            "-func"sv,
+            "-exit"sv,
          }};
          static_assert( Count == Data.size( ) );
          static auto view_to_kind( View view ) -> Kind {
             auto it = cxx::find( Data.begin( ), Data.end( ), view );
-            if ( it == Data.end( ) ) throw Error{ "app: tokens unknown keyword" };
+            if ( it == Data.end( ) ) return Kind::Error;
             auto index = cxx::distance( Data.begin( ), it );
             return APP_CAST( Kind, Beg + index );
          }

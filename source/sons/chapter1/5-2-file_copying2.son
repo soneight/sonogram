@@ -1,0 +1,9 @@
+# copy input to output; 2nd version
+file_copying2-program :
+    c-int2-void,
+
+    # -use std.io,
+    -for { c{ get_char( ) } <> EOF }:
+        put_char( c )
+    ;
+;
