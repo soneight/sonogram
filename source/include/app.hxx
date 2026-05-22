@@ -109,23 +109,23 @@ namespace app {
       };
       auto scan_identifier = [&]( ) {
          Char prev = ch;
-         while ( next_char( ) and ( Locale::is_alnum( ch ) || ch == '_' ) ) prev = ch;
+         while ( next_char( ) and ( Locale::is_alnums( ch ) || ch == '_' ) ) prev = ch;
          if ( prev == '_' ) return kind_error( "identifier cannot end with underscore character"s );
          return Kind::Identifier;
       };
       auto scan_spaces = [&]( ) {
-         while ( next_char( ) and Locale::is_blank( ch ) );
+         while ( next_char( ) and Locale::is_blanks( ch ) );
          return Kind::Space;
       };
       auto scan_comment = [&]( ) {
-         if ( next_char( ) and not Locale::is_blank( ch ) ) return kind_error( "no space character after comment symbol"s );
+         if ( next_char( ) and not Locale::is_blanks( ch ) ) return kind_error( "no space character after comment symbol"s );
          while ( next_char( ) and not ( ch == '\n' ) );
          return Kind::Comment;
       };
       auto scan_keyword = [&]( ) {
          auto prevPos = pos - 1;
-         while ( next_char( ) and Locale::is_alpha( ch ) );
-         if ( Locale::is_digit( ch ) ) next_char( ); // NOTE: for int0, int1 and so on keyword types
+         while ( next_char( ) and Locale::is_alphas( ch ) );
+         if ( Locale::is_digits( ch ) ) next_char( ); // NOTE: for int0, int1 and so on keyword types
          auto kind = Token::Keywords::view_to_kind( str.substr( prevPos, pos - prevPos - 1 ) );
          if ( kind == Kind::Error ) return kind_error( "unknown keyword"s );
          bool isAppAndUnknown = kind == Kind::Keyword_Program and tokens[0].kind != Kind::Apptype_Unknown;
@@ -147,12 +147,12 @@ namespace app {
          }
       };
       auto scan_number = [&]( ) {
-         while ( next_char( ) and ( Locale::is_digit( ch ) or ch == '.' ) );
+         while ( next_char( ) and ( Locale::is_digits( ch ) or ch == '.' ) );
          return Kind::Number;
       };
       auto scan_binary = [&]( ) {
          auto prev = ch;
-         if ( next_char( ) and not Locale::is_binary( ch ) ) return kind_error( "expect binary character"s );
+         next_char( );
          auto curr = ch;
          next_char( );
          if ( prev == '<' and curr == '=' ) return Kind::Less_Equal;
@@ -185,7 +185,7 @@ namespace app {
          case ']': kind = Kind::Array_Closed; pair = BufferBraces::Pair_Array; break;
          case ',': { next_char( ); return Kind::Single_Comma; }
             default: {
-               auto charStr = ( Locale::is_print( ch ) ) ? String{ APP_CAST( char, ch ) } : cxx::to_string( ch );
+               auto charStr = ( Locale::is_prints( ch ) ) ? String{ APP_CAST( char, ch ) } : cxx::to_string( ch );
                return kind_error( "unknown character to process '"s + charStr + "'"s );
             }
          }
@@ -232,18 +232,18 @@ namespace app {
             ++curLine;
             curColn = 0;
             continue;
-         }
+         } else if ( ch > 127u ) throw Error{ "T?: multibyte characters could appear only in comments"s };
          auto prevPos = pos - 1;
          auto prevCol = curColn;
          auto kind = Kind::Last_;
-         if/*_*/ ( Locale::is_alpha( ch ) ) kind = scan_identifier( );
-         else if ( Locale::is_blank( ch ) ) kind = scan_spaces( );
+         if/*_*/ ( Locale::is_alphas( ch ) ) kind = scan_identifier( );
+         else if ( Locale::is_blanks( ch ) ) kind = scan_spaces( );
          else if ( ch == '#' ) kind = scan_comment( );
          else if ( ch == '-' ) kind = scan_keyword( );
          else if ( ch == '\'' or ch == '"' or ch == '`' ) kind = scan_literal( );
          else if ( ch == '+' ) kind = Kind::Unary_Plus, next_char( );
-         else if ( Locale::is_digit( ch ) ) kind = scan_number( );
-         else if ( Locale::is_binary(ch ) ) kind = scan_binary( );
+         else if ( Locale::is_digits( ch ) ) kind = scan_number( );
+         else if ( Locale::is_binary( ch ) ) kind = scan_binary( );
          else kind = scan_singles( );
          if ( kind == Kind::Error ) throw Error{ "T?: "s + errMsg + " near "s + to_string( tokens.back( ) ) };
          // NOTE: some funcs may want to return Last_ kind to continue a process
