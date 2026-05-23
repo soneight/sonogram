@@ -1,7 +1,7 @@
 #ifndef APP_LOCALE_HXX
 #define APP_LOCALE_HXX
 
-#include <app/alias.hxx>
+#include "alias.hxx"
 
 namespace app {
    class Locale final {

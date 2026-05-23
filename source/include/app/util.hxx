@@ -1,8 +1,8 @@
 #ifndef APP_UTIL_HXX
 #define APP_UTIL_HXX
 
-#include <app/alias.hxx>
-#include <app/token.hxx>
+#include "alias.hxx"
+#include "token.hxx"
 
 namespace app {
 

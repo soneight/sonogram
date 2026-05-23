@@ -1,7 +1,7 @@
 #ifndef APP_LIMITS_HXX
 #define APP_LIMITS_HXX
 
-#include <app/alias.hxx>
+#include "alias.hxx"
 
 namespace app {
    // maximum limits
