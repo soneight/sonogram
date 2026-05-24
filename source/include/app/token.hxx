@@ -1,7 +1,7 @@
 #ifndef APP_TOKEN_HXX
 #define APP_TOKEN_HXX
 
-#include <app/alias.hxx>
+#include "alias.hxx"
 // son8
 // -- cxx_unit
 #include <son8/cxx/func.hxx>

@@ -1,11 +1,11 @@
 #ifndef APP_HXX
 #define APP_HXX
 
-#include <app/alias.hxx>
-#include <app/limits.hxx>
-#include <app/locale.hxx>
-#include <app/token.hxx>
-#include <app/util.hxx>
+#include "app/alias.hxx"
+#include "app/limits.hxx"
+#include "app/locale.hxx"
+#include "app/token.hxx"
+#include "app/util.hxx"
 // son8
 // -- c
 #include <son8/c/byte.hxx>
