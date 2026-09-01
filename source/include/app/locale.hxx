@@ -11,8 +11,8 @@ namespace app {
       APP_DATA Blanks = 3u;
       APP_DATA Digits = 4u;
       APP_DATA Prints = 5u;
-      using InnerMasks_ = Array< Unt3, 2 >;
-      using AllMasks_ = Array< InnerMasks_, 6 >;
+      using InnerMasks_ = Flat< Unt3, 2 >;
+      using AllMasks_ = Flat< InnerMasks_, 6 >;
       APP_DATA Masks = AllMasks_{{
          { 0x03FF'0000'0000'0000ull, 0x07FF'FFFE'07FF'FFFEull }, // Alnums: 57-48(9-0), 122-97(z-a) 90-65(Z-A)
          { 0x0000'0000'0000'0000ull, 0x07FF'FFFE'07FF'FFFEull }, // Alphas: 122-97(z-a) 90-65(Z-A)

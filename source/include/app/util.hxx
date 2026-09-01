@@ -8,7 +8,7 @@ namespace app {
 
    APP_FUNC to_string( Token::Kind kind ) -> String {
       using TokenView = Flat< Token::View, Token::Count + 1 >;
-      TokenView kinds{{
+      static constexpr TokenView kinds{{
          "Spaces"sv,
          "Comment"sv,
          "Identifier"sv,

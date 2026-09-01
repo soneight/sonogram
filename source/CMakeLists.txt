@@ -13,7 +13,7 @@ if( NOT TARGET son8__mainland )
     fetchcontent_declare(
         son8__mainland
         GIT_REPOSITORY https://github.com/soneight/mainland.git
-        GIT_TAG        b66cbfb7a93669bbdadc1344537642412ce88047 # v0.0.1
+        GIT_TAG        8145becfc18b4c5968ddd61d19540d5a64ec282f # v0.1.1
     )
     fetchcontent_makeavailable( son8__mainland )
 endif( )
@@ -25,7 +25,7 @@ if( NOT TARGET son8__core_lib )
     fetchcontent_declare(
         son8__core_lib
         GIT_REPOSITORY https://github.com/soneight/core_lib.git
-        GIT_TAG        a99a633d98f489f9125aff72538b4de9aee57e00 # v0.0.2
+        GIT_TAG        85a4e685d0e5b245f8cbb94e625a8ab1365c5f16 # v0.0.5
     )
     fetchcontent_makeavailable( son8__core_lib )
 endif( )

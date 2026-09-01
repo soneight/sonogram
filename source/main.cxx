@@ -8,7 +8,7 @@ static app::Source GlobalSourceWrite_;
 static app::Ref< Str > Global_Source_Read = GlobalSourceWrite_.get( );
 
 void son8::main( Args args ) try {
-   auto constexpr New_Line = '\n';
+   APP_DATA New_Line = '\n';
    cxx::cout << "sonogram:\n";
    cxx::cout << "-- Max File Size: " << app::Max::print( app::Max::File_Size ) << New_Line;
    cxx::cout << "-- Max Line Length: " << app::Max::print( app::Max::Line_Length ) << New_Line;

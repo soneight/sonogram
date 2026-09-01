@@ -29,7 +29,7 @@ namespace app {
 
    // type aliases
    template< typename Type, unsigned Size >
-   using Flat = Array< Type, Size >;
+   using Flat = Flat< Type, Size >;
    using Error = cxx::runtime_error;
    using String = cxx::string;
    using StringView = cxx::string_view;
