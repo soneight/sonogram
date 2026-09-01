@@ -18,7 +18,7 @@ void son8::main( Args args ) try {
    // validate arguments
    using app::Error;
    if ( args.size( ) != 2 ) throw Error{ "expect exactly one argument" };
-   auto fileName = *( args.begin( ) + 1 );
+   auto fileName = args[1u]; // int range checks, unsigned does not
    namespace fs = cxx::filesystem;
    app::Size fileSize = fs::file_size( fileName );
    if ( app::Max::File_Size < fileSize ) throw Error{ "source file size exceeds maximum limit" };
