@@ -3,7 +3,13 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 # app
 add_executable( ${APP} )
-target_sources( ${APP} PRIVATE main.cxx )
+target_sources( ${APP} PRIVATE
+   main.cxx
+# impl
+   impl/app.cxx
+   impl/program.cxx
+   impl/tokenizer.cxx
+)
 
 # son8 libraries
 # -- mainland

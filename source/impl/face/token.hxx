@@ -1,10 +1,7 @@
-#ifndef APP_TOKEN_HXX
-#define APP_TOKEN_HXX
+#ifndef FACE_TOKEN_HXX
+#define FACE_TOKEN_HXX
 
-#include "alias.hxx"
-// son8
-// -- cxx_unit
-#include <son8/cxx/func.hxx>
+#include "alias/text.hxx"
 
 namespace app {
    struct Token final {
@@ -73,15 +70,9 @@ namespace app {
          // NOTE must be last
          Last_
       };
-      APP_DATA is_bracket_opened( Kind kind ) {
-         // NOTE: determine if bracket is opened `:({[` or close `;)}]`
-         // \ return true if it is an opened bracket checking first bit
-         auto opened_bit = APP_CAST( unsigned, Kind::Scope_Opened ) & 1u;
-         return opened_bit == ( APP_CAST( unsigned, kind ) & 1u );
-      }
+      APP_DATA is_bracket_opened( Kind kind ) -> bool;
       APP_DATA Count = APP_CAST( Size, Kind::Last_ );
-      static_assert( Kind::Last_ == Kind{ Count } );
-      using View = StringView;
+      static_assert( Kind::Last_ == Kind{ Count });
       // keywords helpers
       struct Keywords final {
          APP_DATA Beg = APP_CAST( Size, Kind::KEYWORDS_beg );
@@ -108,17 +99,11 @@ namespace app {
             "-func"sv,
             "-exit"sv,
          }};
-         static_assert( Count == Data.size( ) );
-         static auto view_to_kind( View view ) -> Kind {
-            auto it = cxx::find( Data.begin( ), Data.end( ), view );
-            if ( it == Data.end( ) ) return Kind::Error;
-            auto index = cxx::distance( Data.begin( ), it );
-            return APP_CAST( Kind, Beg + index );
-         }
+         static_assert( Count == Data.size( ));
+         static auto view_to_kind( View view ) -> Kind;
       };
 
       // data members
-      using Ref = app::Ref< Token >;
       View view;
       Size line;
       Size coln;
@@ -127,10 +112,13 @@ namespace app {
       // Token( ) = default;
       Token( View view, Size line, Size coln, Kind kind )
       : view{ view }, line{ line }, coln{ coln }, kind{ kind } {  }
-   };
+   }; // struct Token
+
+   APP_FUNC to_string( Token::Kind kind ) -> Text;
+   APP_FUNC to_string( Token const &token ) -> Text;
 }
 
-#endif//APP_TOKEN_HXX
+#endif//FACE_TOKEN_HXX
 
 // GNU Affero General Public License v3.0 or later
 // NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>

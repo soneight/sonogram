@@ -1,45 +1,56 @@
-#include "include/app.hxx"
+// face
+#include "impl/face/app.hxx"
 // son8
-// -- mainland
+#include <son8/cxx/file.hxx>
+#include <son8/cxx/flow.hxx>
 #include <son8/main.hxx>
 
-using Str = app::String;
+using Str = app::Text;
 static app::Source GlobalSourceWrite_;
 static app::Ref< Str > Global_Source_Read = GlobalSourceWrite_.get( );
 
 void son8::main( Args args ) try {
+   using namespace app;
    APP_DATA New_Line = '\n';
    cxx::cout << "sonogram:\n";
-   cxx::cout << "-- Max File Size: " << app::Max::print( app::Max::File_Size ) << New_Line;
-   cxx::cout << "-- Max Line Length: " << app::Max::print( app::Max::Line_Length ) << New_Line;
-   cxx::cout << "-- Max Scoped Depth: " << app::Max::print( app::Max::Scoped_Depth ) << New_Line;
-   cxx::cout << "-- Max Nested Depth: " << app::Max::print( app::Max::Nested_Depth ) << New_Line;
+   cxx::cout << "-- Max File Size: " << Max::print( Max::File_Size ) << New_Line;
+   cxx::cout << "-- Max Line Length: " << Max::print( Max::Line_Length ) << New_Line;
+   cxx::cout << "-- Max Scoped Depth: " << Max::print( Max::Scoped_Depth ) << New_Line;
+   cxx::cout << "-- Max Nested Depth: " << Max::print( Max::Nested_Depth ) << New_Line;
    cxx::cout << cxx::endl;
    // validate arguments
-   using app::Error;
+   using Error = cxx::runtime_error;
    if ( args.size( ) != 2 ) throw Error{ "expect exactly one argument" };
    auto fileName = args[1u]; // int range checks, unsigned does not
    namespace fs = cxx::filesystem;
-   app::Size fileSize = fs::file_size( fileName );
-   if ( app::Max::File_Size < fileSize ) throw Error{ "source file size exceeds maximum limit" };
+   Size fileSize = fs::file_size( fileName );
+   if ( Max::File_Size < fileSize ) throw Error{ "source file size exceeds maximum limit" };
    // open file
    using InputFile = cxx::ifstream;
    InputFile sourceFile{ fileName, cxx::ios::binary };
    if ( not sourceFile.is_open( ) ) throw Error{ "source file cannot be open" };
    // check last byte for new line character
-   auto isFileCorrect = []( app::Out< InputFile > file ) -> bool {
+   auto isFileCorrect = []( Out< InputFile > file ) -> bool {
       auto lastByte = file.seekg( -1, cxx::ios::end ).get( );
       auto firstByte = file.seekg( 0, cxx::ios::beg ).peek( );
       return firstByte != New_Line && lastByte == New_Line;
    };
    if ( not isFileCorrect( sourceFile ) ) throw Error{ "source file begin with or does not ends with new line character" };
    // read whole file
-   using ItStreamBuf = cxx::istreambuf_iterator< typename InputFile::char_type >;
-   GlobalSourceWrite_ = Str{ ItStreamBuf{ sourceFile }, ItStreamBuf{ } };
-   sourceFile.close( );
+   {
+      // sourceFile.clear( );
+      // sourceFile.seekg( 0, std::ios::beg );
+      Text contents;
+      contents.resize( fileSize );
+      sourceFile.read( contents.data( ), fileSize );
+      sourceFile.close( );
+      GlobalSourceWrite_ = Str{ contents  };
+      // using ItStreamBuf = cxx::istreambuf_iterator< typename InputFile::char_type >;
+      // GlobalSourceWrite_ = Str{ ItStreamBuf{ sourceFile }, ItStreamBuf{ } };
+   }
    // validate maximum line length
-   auto isLineLengthValid = []( app::Ref< Str > str, app::Size max ) -> bool {
-      APP_ASSERT( app::Max::Line_Length <= max && "app: max limit violation" );
+   auto isLineLengthValid = []( Ref< Str > str, Size max ) -> bool {
+      APP_ASSERT( Max::Line_Length <= max && "app: max limit violation" );
       auto const end = str.end( );
       auto beg = str.begin( );
       auto it = beg;
@@ -60,7 +71,7 @@ void son8::main( Args args ) try {
       // \ fast-paths if landing exactly on new line
       // \ falls back to `found` backtracking helper
       while ( it < end ) {
-         if ( APP_CAST( app::Size, end - it ) <= max ) return true;
+         if ( APP_CAST( Size, end - it ) <= max ) return true;
          it += max;
          if ( *it == New_Line ) {
             beg = ++it;
@@ -71,19 +82,21 @@ void son8::main( Args args ) try {
       }
       return true;
    };
-   app::Ref< Str > source = Global_Source_Read;
-   if ( not isLineLengthValid( source, app::Max::Line_Length ) ) throw Error{ "source file contains lines with length exceeding maximum limit" };
+   Ref< Str > source = Global_Source_Read;
+   if ( not isLineLengthValid( source, Max::Line_Length ) ) throw Error{ "source file contains lines with length exceeding maximum limit" };
    // tokens
-   auto tokens = app::lex_tokens( source );
-   for ( app::Token::Ref token : tokens ) {
-      cxx::cout << app::to_string( token ) << New_Line;
+   auto tokens = lex_tokens( source );
+   for ( Ref< Token > token : tokens ) {
+      cxx::cout << to_string( token ) << New_Line;
    }
    cxx::cout << cxx::endl;
-   if ( tokens[0].kind != app::Token::Kind::Apptype_Program ) throw Error{ "not correct application type token" };
+   if ( tokens[0].kind != Token::Kind::Apptype_Program ) throw Error{ "not correct application type token" };
    // program
    auto program = gen_program( tokens );
-   using OutputFile = cxx::ofstream;
-   OutputFile programFile{ fs::current_path( ) / "temp" / ( program.fileName + ".cxx" ), cxx::ios::binary };
+   fs::path outputPath = fs::current_path( ) / "temp";
+   fs::create_directory( outputPath );
+   using OutputFile = std::ofstream;
+   OutputFile programFile{ outputPath / ( program.fileName + ".cxx" ), cxx::ios::binary };
    if ( not programFile.is_open( ) ) throw Error{ "cannot open program file for writing" };
    programFile << program.mainHead << New_Line;
    programFile << program.mainBody << New_Line;

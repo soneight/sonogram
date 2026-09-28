@@ -1,14 +1,12 @@
-#ifndef APP_UTIL_HXX
-#define APP_UTIL_HXX
-
-#include "alias.hxx"
-#include "token.hxx"
+#include "face/app.hxx"
+// son8
+#include <son8/cxx/func.hxx>
 
 namespace app {
 
-   APP_FUNC to_string( Token::Kind kind ) -> String {
-      using TokenView = Flat< Token::View, Token::Count + 1 >;
-      static constexpr TokenView kinds{{
+   APP_FUNC to_string( Token::Kind kind ) -> Text {
+      using TokenView = Flat< View, Token::Count + 1 >;
+      APP_DATA kinds = TokenView{{
          "Spaces"sv,
          "Comment"sv,
          "Identifier"sv,
@@ -58,25 +56,37 @@ namespace app {
          "Error: Unknown Token"sv,
          "App Terminator"sv
       }};
-      return String{ kinds[APP_CAST( Size, kind )] };
+
+      return Text{ kinds[APP_CAST( Size, kind )] };
    }
 
-   APP_FUNC to_string( Token const &token ) -> String {
-      String result;
+   auto Token::Keywords::view_to_kind( View view ) -> Kind {
+      auto it = cxx::find( Data.begin( ), Data.end( ), view );
+
+      if ( it == Data.end( ) ) { return Kind::Error; }
+
+      auto index = cxx::distance( Data.begin( ), it );
+
+      return APP_CAST( Kind, Beg + index );
+   }
+
+   APP_FUNC to_string( Token const &token ) -> Text {
+      Text result;
       auto cb = cxx::to_string( token.coln );
       auto ce = cxx::to_string( token.coln + token.view.size( ) - 1 );
       result += "Token{";
       result += " Kind: " + to_string( token.kind );
-      if ( token.view[0] == '"' ) result += ", View: '" + String{ token.view } + "'";
-      else result += ", View: \"" + String{ token.view } + '"';
+
+      if ( token.view[0] == '"' ) { result += ", View: '" + Text{ token.view } + "'"; }
+      else { result += ", View: \"" + Text{ token.view } + '"'; }
+
       result += " @" + cxx::to_string( token.line ) + ':' + cb + '-' + ce;
       result += " }";
+
       return result;
    }
 
 }
-
-#endif//APP_UTIL_HXX
 
 // GNU Affero General Public License v3.0 or later
 // NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>
