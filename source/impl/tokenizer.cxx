@@ -1,8 +1,9 @@
-#include "face/alias/data.hxx"
+#include "face/tokenizer.hxx"
 #include "face/alias/flow.hxx"
 #include "face/locale.hxx"
-#include "face/token.hxx"
 #include "face/limits.hxx"
+// son8
+#include <son8/cxx/file.hxx>
 
 namespace app {
    APP_EXPR Token::is_bracket_opened( Kind kind ) -> bool {
@@ -12,13 +13,14 @@ namespace app {
       return opened_bit == ( APP_CAST( unsigned, kind ) & 1u );
    }
 
-   APP_EXPR Locale::is_alnums( Char ch ) -> bool { dbg_( ch ); return ( Masks[Alnums][ch >> 6u] >> ( ch & 63u )) & 1u; }
-   APP_EXPR Locale::is_alphas( Char ch ) -> bool { dbg_( ch ); return ( Masks[Alphas][ch >> 6u] >> ( ch & 63u )) & 1u; }
-   APP_EXPR Locale::is_binary( Char ch ) -> bool { dbg_( ch ); return ( Masks[Binary][ch >> 6u] >> ( ch & 63u )) & 1u; }
-   APP_EXPR Locale::is_blanks( Char ch ) -> bool { dbg_( ch ); return ( Masks[Blanks][ch >> 6u] >> ( ch & 63u )) & 1u; }
-   APP_EXPR Locale::is_digits( Char ch ) -> bool { dbg_( ch ); return ( Masks[Digits][ch >> 6u] >> ( ch & 63u )) & 1u; }
-   APP_EXPR Locale::is_prints( Char ch ) -> bool { dbg_( ch ); return ( Masks[Prints][ch >> 6u] >> ( ch & 63u )) & 1u; }
+   APP_EXPR Locale::is_alnums( Unt0 ch ) -> bool { return ( Masks[Alnums][ch >> 6u] >> ( ch & 63u )) & 1u; }
+   APP_EXPR Locale::is_alphas( Unt0 ch ) -> bool { return ( Masks[Alphas][ch >> 6u] >> ( ch & 63u )) & 1u; }
+   APP_EXPR Locale::is_binary( Unt0 ch ) -> bool { return ( Masks[Binary][ch >> 6u] >> ( ch & 63u )) & 1u; }
+   APP_EXPR Locale::is_blanks( Unt0 ch ) -> bool { return ( Masks[Blanks][ch >> 6u] >> ( ch & 63u )) & 1u; }
+   APP_EXPR Locale::is_digits( Unt0 ch ) -> bool { return ( Masks[Digits][ch >> 6u] >> ( ch & 63u )) & 1u; }
+   APP_EXPR Locale::is_prints( Unt0 ch ) -> bool { return ( Masks[Prints][ch >> 6u] >> ( ch & 63u )) & 1u; }
 
+namespace {
    struct BufferBraces final {
       using Pairs = Flat< cxx::pair< Char, Char >, 4 >;
       APP_DATA pairs = Pairs{{
@@ -38,16 +40,17 @@ namespace app {
       Unt0 nestedDepth{ };
       Unt0 idx{ };
 
-      Text datastr() const {
+      APP_FUNC datastr() const -> Text {
          Text result;
 
          for ( auto i = 0u; i < idx; ++i ) result += data[i];
 
          return result;
       }
-      bool is_exceed_nested_depth( ) { return nestedDepth > Max::Nested_Depth; }
-      bool is_exceed_scoped_depth( ) { return scopedDepth > Max::Scoped_Depth; }
+      APP_FUNC is_exceed_nested_depth( ) const -> bool { return nestedDepth > Max::Nested_Depth; }
+      APP_FUNC is_exceed_scoped_depth( ) const -> bool { return scopedDepth > Max::Scoped_Depth; }
    };
+}
 
    using Tokens = Grow< Token >;
 
@@ -62,10 +65,10 @@ namespace app {
       using Kind = Token::Kind;
       tokens.emplace_back( View{ "\0"sv }, 0, 0, Kind::Apptype_Unknown );
       Size pos{ }, curLine{ 1u }, curColn{ };
-      Char ch;
+      Unt0 ch;
       auto next_char = [&]( ) -> bool {
          ++curColn;
-         ch = APP_CAST( Char, str[pos++] );
+         ch = APP_CAST( Unt0, str[pos++] );
          // NOTE: current scheme with no checking for false condition allow
          // \ to avoid such check in other scan characters lambda functions
          // \ this is possible because source required to end with new line
@@ -73,13 +76,13 @@ namespace app {
          return true;
       };
       Text errMsg;
-      auto kind_error = [&errMsg]( app::Ref< Text > message ) {
+      auto kind_error = [&errMsg]( Ref< Text > message ) {
          errMsg = message;
 
          return Kind::Error;
       };
-      auto scan_identifier = [&]( ) {
-         Char prev = ch;
+      auto scan_identifier = [&]{
+         Unt0 prev = ch;
 
          while ( next_char( ) and ( Locale::is_alnums( ch ) || ch == '_' )) prev = ch;
 
@@ -87,58 +90,59 @@ namespace app {
 
          return Kind::Identifier;
       };
-      auto scan_spaces = [&]( ) {
-         while ( next_char( ) and Locale::is_blanks( ch ));
+      auto scan_spaces = [&]{
+         while ( next_char( ) and Locale::is_blanks( ch )) APP_SKIP;
 
          return Kind::Space;
       };
-      auto scan_comment = [&]( ) {
+      auto scan_comment = [&]{
          if ( next_char( ) and not Locale::is_blanks( ch )) return kind_error( "no space character after comment symbol"s );
 
-         while ( next_char( ) and not ( ch == '\n' ));
+         while ( next_char( ) and ch != '\n' ) APP_SKIP;
 
          return Kind::Comment;
       };
-      auto scan_keyword = [&]( ) {
+      auto scan_keyword = [&]{
          auto prevPos = pos - 1;
 
-         while ( next_char( ) and Locale::is_alphas( ch ));
+         while ( next_char( ) and Locale::is_alphas( ch )) APP_SKIP;
 
          if ( Locale::is_digits( ch ) ) next_char( ); // NOTE: for int0, int1 and so on keyword types
 
          auto kind = Token::Keywords::view_to_kind( str.substr( prevPos, pos - prevPos - 1 ));
 
          if ( kind == Kind::Error ) return kind_error( "unknown keyword"s );
+         // is app and unknown
+         if ( kind == Kind::Keyword_Program and tokens[0].kind != Kind::Apptype_Unknown ) { return kind_error( "application type duplicate"s ); }
 
-         bool isAppAndUnknown = kind == Kind::Keyword_Program and tokens[0].kind != Kind::Apptype_Unknown;
-
-         if ( isAppAndUnknown ) return kind_error( "application type duplicate"s );
-         else tokens[0] = Token{ "\0"sv, 0, 0, Kind::Apptype_Program };
+         tokens[0] = Token{ "\0"sv, 0, 0, Kind::Apptype_Program };
 
          return kind;
       };
-      auto scan_literal = [&]( ) {
+      auto scan_literal = [&]{
          auto checkSameEnd = ch;
 
-         while ( next_char( ) and not ( ch == checkSameEnd )) {
+         while ( next_char( ) and ch != checkSameEnd) {
             if ( ch == '\n' ) return kind_error( "new line character before closing quote literal"s );
          }
 
          next_char( ); // NOTE: capture last char as processing by default moving to prev char later
 
          switch ( checkSameEnd ) {
-            case '\'': return Kind::Literal_Single;
-            case '"' : return Kind::Literal_Double;
-            case '`' : return Kind::Literal_Grave;
-            default  : return kind_error( "scan_literal incorrect check same end"s );
+         case '\'': return Kind::Literal_Single;
+         case '"' : return Kind::Literal_Double;
+         case '`' : return Kind::Literal_Grave;
+            default : {
+               return kind_error( "scan_literal incorrect check same end"s );
+            }
          }
       };
-      auto scan_number = [&]( ) {
-         while ( next_char( ) and ( Locale::is_digits( ch ) or ch == '.' ));
+      auto scan_number = [&]{
+         while ( next_char( ) and ( Locale::is_digits( ch ) or ch == '.' )) APP_SKIP;
 
          return Kind::Number;
       };
-      auto scan_binary = [&]( ) {
+      auto scan_binary = [&]{
          auto prev = ch;
          next_char( );
          auto curr = ch;
@@ -149,14 +153,14 @@ namespace app {
          if ( prev == '=' and curr == '=' ) return Kind::Equal_Equal;
          if ( prev == '>' and curr == '>' ) return Kind::More_More;
          if ( prev == '<' and curr == '>' ) return Kind::Not_Equal;
-         if ( prev == '=' and curr == '*' ) return Kind::Math_Mulptiply;
+         if ( prev == '=' and curr == '*' ) return Kind::Math_Multiply;
          if ( prev == '=' and curr == '/' ) return Kind::Math_Divide;
          if ( prev == '=' and curr == '+' ) return Kind::Math_Plus;
          if ( prev == '=' and curr == '-' ) return Kind::Math_Minus;
 
          return kind_error( "unknown binary operation"s );
       };
-      auto scan_singles = [&]( ) {
+      auto scan_singles = [&]{
          auto &idxBrace = bufferBraces.idx;
          auto &buffer = bufferBraces.data;
          auto pair = BufferBraces::Pair_Error;
@@ -176,7 +180,7 @@ namespace app {
          case ']': kind = Kind::Array_Closed; pair = BufferBraces::Pair_Array; break;
          case ',': { next_char( ); return Kind::Single_Comma; }
             default: {
-               auto charStr = ( Locale::is_prints( ch )) ? Text{ APP_CAST( char, ch )} : cxx::to_string( ch );
+               auto charStr = Locale::is_prints( ch ) ? Text{ APP_CAST( Char, ch )} : cxx::to_string( ch );
                return kind_error( "unknown character to process '"s + charStr + "'"s );
             }
          }
@@ -186,24 +190,26 @@ namespace app {
          if ( Token::is_bracket_opened( kind )) {
             if ( idxBrace == BufferBraces::Data_Size ) return kind_error( "braces overflow"s );
             // NOTE: an `:` cannot appear inside any of other bracket so
-            // \ technically it can only be stacked up with itself thats
+            // \ technically it can only be stacked up with itself which
             // \ allow to check last buffer entrance and not full buffer
-            if ( idxBrace and ch == ':' and buffer[idxBrace - 1] != ':' ) return kind_error( "opening scope ':' can only be nested with itself" );
-            buffer[idxBrace++] = ch;
+            if ( idxBrace and ch == ':' and buffer[idxBrace - 1] != ':' ) return kind_error( "opening scope ':' can only be nested with itself"s );
+            buffer[idxBrace++] = APP_CAST( Char, ch );
 
             if ( ch == ':' ) {
                ++bufferBraces.scopedDepth;
-               if ( bufferBraces.is_exceed_scoped_depth( )) return kind_error( "scoped depth exceed maximum limit" );
+               if ( bufferBraces.is_exceed_scoped_depth( )) return kind_error( "scoped depth exceed maximum limit"s );
             } else {
                ++bufferBraces.nestedDepth;
-               if ( bufferBraces.is_exceed_nested_depth( )) return kind_error( "nested depth exceed maximum limit" );
+               if ( bufferBraces.is_exceed_nested_depth( )) return kind_error( "nested depth exceed maximum limit"s );
             }
          } else { // not opened, closed
             if ( idxBrace == 0 ) return kind_error( "braces underflow"s  );
-            Char curBrace = buffer[--idxBrace];
-            if ( curBrace != BufferBraces::pairs[pair].first ) return kind_error( "braces mismatch"s );
-            if ( ch == ';' ) --bufferBraces.scopedDepth;
-            else --bufferBraces.nestedDepth;
+
+            if ( Char curBrace = buffer[--idxBrace]; curBrace != BufferBraces::pairs[pair].first ) {
+               return kind_error( "braces mismatch"s );
+            }
+
+            if ( ch == ';' ) { --bufferBraces.scopedDepth; } else { --bufferBraces.nestedDepth; }
          }
 
          next_char( );
@@ -218,28 +224,30 @@ namespace app {
       // \ REASON OF INFINITE LOOP could be caused because of this behavior!
       while ( next_char( )) {
          if ( ch == '\n' ) {
-            Ref< Token > prevToken = tokens.back( );
-            if ( prevToken.kind == Kind::Space ) { throw Error{ "app::lex_tokens: trailing whitespace at "s + to_string( tokens.back( ))}; }
+            if ( Ref< Token > prevToken = tokens.back( ); prevToken.kind == Kind::Space ) {
+               throw Error{ "app::lex_tokens: trailing whitespace at "s + to_string( tokens.back( ))};
+            }
 
-            if ( pos >= size ) break; // end of source
+            if ( pos >= size ) { break; } // end of source
 
             ++curLine;
             curColn = 0;
 
             continue;
-         } else if ( ch > 127u ) throw Error{ "T?: multibyte characters could appear only in comments"s };
+         }
+         if ( ch > 127u ) throw Error{ "T?: multibyte characters could appear only in comments"s };
          auto prevPos = pos - 1;
          auto prevCol = curColn;
          auto kind = Kind::Last_;
 
-         if/*_*/ ( Locale::is_alphas( ch ) ) kind = scan_identifier( );
-         else if ( Locale::is_blanks( ch ) ) kind = scan_spaces( );
+         if/*_*/ ( Locale::is_alphas( ch )) kind = scan_identifier( );
+         else if ( Locale::is_blanks( ch )) kind = scan_spaces( );
          else if ( ch == '#' ) kind = scan_comment( );
          else if ( ch == '-' ) kind = scan_keyword( );
          else if ( ch == '\'' or ch == '"' or ch == '`' ) kind = scan_literal( );
          else if ( ch == '+' ) kind = Kind::Unary_Plus, next_char( );
-         else if ( Locale::is_digits( ch ) ) kind = scan_number( );
-         else if ( Locale::is_binary( ch ) ) kind = scan_binary( );
+         else if ( Locale::is_digits( ch )) kind = scan_number( );
+         else if ( Locale::is_binary( ch )) kind = scan_binary( );
          else kind = scan_singles( );
 
          if ( kind == Kind::Error ) { throw Error{ "T?: "s + errMsg + " near "s + to_string( tokens.back( ))}; }
@@ -247,13 +255,13 @@ namespace app {
          if ( kind == Kind::Last_ ) { continue; }
          --pos;
          --curColn;
-         auto view = [&str,pos,prevPos]( ) { return View{ &str[prevPos], pos - prevPos }; };
+         auto view = [&str,pos,prevPos]{ return View{ &str[prevPos], pos - prevPos }; };
 #ifndef APP_INNER // preserve token spaces and comments only for internal builds
          if ( kind == Kind::Space or kind == Kind::Comment ) { continue; }
 #endif
          tokens.emplace_back( view( ), curLine, prevCol, kind );
 #ifdef APP_ERROR
-         cxx::cout << to_string( tokens.back( ) ) << std::endl;
+         cxx::cout << to_string( tokens.back( ) ) << cxx::endl;
 #endif
       } // while next_char( )
 

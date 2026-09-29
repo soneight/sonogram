@@ -61,7 +61,7 @@ namespace app {
          Equal_Equal,
          More_More,
          Not_Equal,
-         Math_Mulptiply,
+         Math_Multiply,
          Math_Divide,
          Math_Plus,
          Math_Minus,
@@ -75,8 +75,8 @@ namespace app {
       static_assert( Kind::Last_ == Kind{ Count });
       // keywords helpers
       struct Keywords final {
-         APP_DATA Beg = APP_CAST( Size, Kind::KEYWORDS_beg );
-         APP_DATA End = APP_CAST( Size, Kind::KEYWORDS_end );
+         APP_DATA Beg = APP_CAST( Int2, Kind::KEYWORDS_beg );
+         APP_DATA End = APP_CAST( Int2, Kind::KEYWORDS_end );
          APP_DATA Count = End - Beg;
          using Array = Flat< View, Count >;
          APP_DATA Data = Array{{
@@ -115,7 +115,7 @@ namespace app {
    }; // struct Token
 
    APP_FUNC to_string( Token::Kind kind ) -> Text;
-   APP_FUNC to_string( Token const &token ) -> Text;
+   APP_FUNC to_string( Ref< Token > token ) -> Text;
 }
 
 #endif//FACE_TOKEN_HXX

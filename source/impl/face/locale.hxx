@@ -21,14 +21,13 @@ namespace app {
          { 0x03FF'0000'0000'0000ull, 0x0000'0000'0000'0000ull }, // Digits: 57-48(9-0)
          { 0xFFFF'FFFF'0000'0000ull, 0x7FFF'FFFF'FFFF'FFFFull }, // Prints
       }};
-      APP_DATA dbg_( Char ch ) { APP_ASSERT( ch < 128u ); }
    public:
-      APP_DATA is_alnums( Char ch ) -> bool;
-      APP_DATA is_alphas( Char ch ) -> bool;
-      APP_DATA is_binary( Char ch ) -> bool;
-      APP_DATA is_blanks( Char ch ) -> bool;
-      APP_DATA is_digits( Char ch ) -> bool;
-      APP_DATA is_prints( Char ch ) -> bool;
+      APP_DATA is_alnums( Unt0 ch ) -> bool;
+      APP_DATA is_alphas( Unt0 ch ) -> bool;
+      APP_DATA is_binary( Unt0 ch ) -> bool;
+      APP_DATA is_blanks( Unt0 ch ) -> bool;
+      APP_DATA is_digits( Unt0 ch ) -> bool;
+      APP_DATA is_prints( Unt0 ch ) -> bool;
    };
 }
 

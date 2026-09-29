@@ -23,6 +23,7 @@ namespace app {
             }
          }
       }
+      APP_DATA is_valid_file_size( Size value ) -> bool { return value <= File_Size; }
    };
 } // namespace son8
 

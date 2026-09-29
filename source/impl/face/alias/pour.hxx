@@ -15,6 +15,7 @@
 #define APP_DISC auto
 #define APP_FUNC [[nodiscard]] auto
 #define APP_PROC inline void
+#define APP_SKIP ((void)0)
 
 namespace app {
    using namespace son8;

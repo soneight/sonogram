@@ -3,8 +3,8 @@
 // face
 #include "alias.hxx"
 #include "limits.hxx"
-#include "token.hxx"
 #include "program.hxx"
+#include "tokenizer.hxx"
 // son8
 #include <son8/core/alias/data.hxx>
 
@@ -23,19 +23,17 @@ namespace app {
       APP_PROC operator=( Ref< Source > copy ) = delete;
       // impl
       Source( Uni< Text > str ) noexcept : data_{ cxx::move( str )} { }
-      APP_PROC operator=( Uni< Source > move ) {
+      APP_DISC operator=( Uni< Source > move ) noexcept -> Out< Source > {
          assert( not assigned_ and "Source could be assigned only once" );
          data_ = cxx::move( move.data_ );
          assigned_ = true;
+         return *this;
       }
       // accessors
       APP_FUNC get( ) -> Out< Text > { return data_; }
       APP_FUNC get( ) const -> Ref< Text > { return data_; }
    };
 
-   using Tokens = Grow< Token >;
-   APP_FUNC lex_tokens( Ref< Text > str ) -> Tokens;
-   APP_FUNC gen_program( Ref< Tokens > tokens ) -> Program;
 }
 
 #endif//FACE_APP_HXX

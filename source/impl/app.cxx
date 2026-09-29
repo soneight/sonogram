@@ -70,7 +70,7 @@ namespace app {
       return APP_CAST( Kind, Beg + index );
    }
 
-   APP_FUNC to_string( Token const &token ) -> Text {
+   APP_FUNC to_string( Ref< Token > token ) -> Text {
       Text result;
       auto cb = cxx::to_string( token.coln );
       auto ce = cxx::to_string( token.coln + token.view.size( ) - 1 );

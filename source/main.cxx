@@ -5,9 +5,9 @@
 #include <son8/cxx/flow.hxx>
 #include <son8/main.hxx>
 
-using Str = app::Text;
+using app::Text;
 static app::Source GlobalSourceWrite_;
-static app::Ref< Str > Global_Source_Read = GlobalSourceWrite_.get( );
+static app::Ref< Text > Global_Source_Read = GlobalSourceWrite_.get( );
 
 void son8::main( Args args ) try {
    using namespace app;
@@ -19,7 +19,6 @@ void son8::main( Args args ) try {
    cxx::cout << "-- Max Nested Depth: " << Max::print( Max::Nested_Depth ) << New_Line;
    cxx::cout << cxx::endl;
    // validate arguments
-   using Error = cxx::runtime_error;
    if ( args.size( ) != 2 ) throw Error{ "expect exactly one argument" };
    auto fileName = args[1u]; // int range checks, unsigned does not
    namespace fs = cxx::filesystem;
@@ -33,24 +32,20 @@ void son8::main( Args args ) try {
    auto isFileCorrect = []( Out< InputFile > file ) -> bool {
       auto lastByte = file.seekg( -1, cxx::ios::end ).get( );
       auto firstByte = file.seekg( 0, cxx::ios::beg ).peek( );
-      return firstByte != New_Line && lastByte == New_Line;
+      return firstByte != New_Line and lastByte == New_Line;
    };
    if ( not isFileCorrect( sourceFile ) ) throw Error{ "source file begin with or does not ends with new line character" };
    // read whole file
    {
-      // sourceFile.clear( );
-      // sourceFile.seekg( 0, std::ios::beg );
       Text contents;
       contents.resize( fileSize );
-      sourceFile.read( contents.data( ), fileSize );
+      sourceFile.read( contents.data( ), APP_CAST( Long, fileSize ));
       sourceFile.close( );
-      GlobalSourceWrite_ = Str{ contents  };
-      // using ItStreamBuf = cxx::istreambuf_iterator< typename InputFile::char_type >;
-      // GlobalSourceWrite_ = Str{ ItStreamBuf{ sourceFile }, ItStreamBuf{ } };
+      GlobalSourceWrite_ = cxx::move( contents );
    }
    // validate maximum line length
-   auto isLineLengthValid = []( Ref< Str > str, Size max ) -> bool {
-      APP_ASSERT( Max::Line_Length <= max && "app: max limit violation" );
+   auto isLineLengthValid = []( Ref< Text > str, Size max ) -> bool {
+      APP_ASSERT( Max::is_valid_file_size( max ) and "app: max file size limit violation" );
       auto const end = str.end( );
       auto beg = str.begin( );
       auto it = beg;
@@ -66,13 +61,14 @@ void son8::main( Args args ) try {
          }
          return false;
       };
+      Diff diff = APP_CAST( Diff, max );
       // NOTE: Jump-skipping loop
       // \ short-circuit if jumps larger than buffer
       // \ fast-paths if landing exactly on new line
       // \ falls back to `found` backtracking helper
       while ( it < end ) {
-         if ( APP_CAST( Size, end - it ) <= max ) return true;
-         it += max;
+         if ( end - it <= diff ) return true;
+         it += diff;
          if ( *it == New_Line ) {
             beg = ++it;
             continue;
@@ -82,7 +78,7 @@ void son8::main( Args args ) try {
       }
       return true;
    };
-   Ref< Str > source = Global_Source_Read;
+   Ref< Text > source = Global_Source_Read;
    if ( not isLineLengthValid( source, Max::Line_Length ) ) throw Error{ "source file contains lines with length exceeding maximum limit" };
    // tokens
    auto tokens = lex_tokens( source );

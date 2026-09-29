@@ -1,16 +1,14 @@
-#include "face/program.hxx"
-#include "face/alias/data.hxx"
 #include "face/alias/flow.hxx"
+#include "face/program.hxx"
 
 namespace app {
    using Tokens = Grow< Token >;
    APP_FUNC gen_program( Ref< Tokens > tokens ) -> Program {
       using Kind = Token::Kind;
       using State = Program::State;
-      constexpr int Scope_Opened = 0;
-      constexpr int Scope_Closed = 1;
+      static constexpr int Scope_Opened = 0;
+      static constexpr int Scope_Closed = 1;
       Program program;
-      // auto const itEnd = tokens.end( );
       auto itPos = tokens.begin( ) + 1;
       Kind expectKind = Kind::Identifier;
       Token token = tokens.back( );
@@ -32,14 +30,14 @@ namespace app {
 
          if ( scopeDepth < 0 ) { throw Error{ "app::gen_program: scope depth negative" }; }
       };
-      auto parse_program = [&]( ) {
+      auto parse_program = [&]{
          if ( program.state == State::Global ) {
             if ( expectKind != Kind::Keyword_Program ) { throw Error{ "app::gen_program: expect keyword program in global state" }; }
 
             expectKind = Kind::Scope_Opened;
          }
       };
-      auto parse_identifier = [&]( ) {
+      auto parse_identifier = [&]{
          if ( program.state == State::Global ) {
             program.fileName = token.view;
             expectKind = Kind::Keyword_Program;
@@ -49,8 +47,7 @@ namespace app {
       while ( next_token( ) ) {
          switch ( token.kind ) {
 #ifdef APP_INNER
-         case Kind::Comment: continue;
-         case Kind::Space: continue;
+         case Kind::Space: case Kind::Comment: continue;
 #endif//APP_INNER
          case Kind::Identifier: parse_identifier( ); continue;
          case Kind::Keyword_Program: parse_program( ); continue;
@@ -61,12 +58,15 @@ namespace app {
                 throw Error{ "app::gen_program: token is not supported yet" + to_string( token )};
             }
          }
-
+         APP_SKIP;
+#if 0 // TODO
          switch ( program.state ) {
-            default: continue;
+            default: {
+               continue;
+            }
          }
+#endif
       }
-
       if ( scopeDepth ) throw Error{ "app::gen_program: scope depth not equal zero: " + cxx::to_string( scopeDepth)};
 
       return program;

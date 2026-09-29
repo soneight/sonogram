@@ -2,6 +2,7 @@
 #define FACE_PROGRAM_HXX
 
 #include "alias/text.hxx"
+#include "alias/data.hxx"
 #include "token.hxx"
 
 namespace app {
@@ -23,6 +24,9 @@ namespace app {
       , mainHead{ "int main( ) {" }
       , mainFoot{ "}" } { }
    };
+
+   using Tokens = Grow< Token >;
+   APP_FUNC gen_program( Ref< Tokens > tokens ) -> Program;
 
 }
 
