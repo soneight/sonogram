@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.20...3.27 )
 project( sonogram VERSION 0.0.0 LANGUAGES CXX )
-set( APP ${PROJECT_NAME} )
+set( SON8_APP ${PROJECT_NAME} )
 set( APP_LIB app__${APP} )
 add_library( ${APP_LIB} INTERFACE )
 # private configuration under source directory

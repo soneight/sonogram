@@ -2,8 +2,8 @@ set( CMAKE_CXX_STANDARD 17 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 # app
-add_executable( ${APP} )
-target_sources( ${APP} PRIVATE
+add_executable( ${SON8_APP} )
+target_sources( ${SON8_APP} PRIVATE
    main.cxx
 # impl
    impl/app.cxx
@@ -15,19 +15,19 @@ target_sources( ${APP} PRIVATE
 # -- mainland
 if( NOT TARGET son8__mainland )
     include( FetchContent )
-    message( STATUS "${APP}: FetchContent `soneight/mainland`" )
+    message( STATUS "${SON8_APP}: FetchContent `soneight/mainland`" )
     fetchcontent_declare(
         son8__mainland
         GIT_REPOSITORY https://github.com/soneight/mainland.git
-        GIT_TAG        8145becfc18b4c5968ddd61d19540d5a64ec282f # v0.1.1
+        GIT_TAG        8bba2163f5365d218a90343489e387ba655950c5 # v0.1.2
     )
     fetchcontent_makeavailable( son8__mainland )
 endif( )
-message( STATUS "${APP}: found `son8__mainland` target" )
+message( STATUS "${SON8_APP}: target `son8__mainland` found" )
 # -- core_lib
 if( NOT TARGET son8__core_lib )
     include( FetchContent )
-    message( STATUS "${APP}: FetchContent `soneight/core_lib`" )
+    message( STATUS "${SON8_APP}: FetchContent `soneight/core_lib`" )
     fetchcontent_declare(
         son8__core_lib
         GIT_REPOSITORY https://github.com/soneight/core_lib.git
@@ -35,9 +35,9 @@ if( NOT TARGET son8__core_lib )
     )
     fetchcontent_makeavailable( son8__core_lib )
 endif( )
-message( STATUS "${APP}: found `son8__core_lib` target" )
+message( STATUS "${SON8_APP}: found `son8__core_lib` target" )
 
-target_link_libraries( ${APP} PRIVATE ${APP_LIB} son8::mainland son8::c_header son8::cxx_unit son8::core_lib )
+target_link_libraries( ${SON8_APP} PRIVATE ${APP_LIB} son8::mainland son8::c_header son8::cxx_unit son8::core_lib )
 
 # GNU Affero General Public License v3.0 or later
 # NO WARRANTY OF ANY KIND more details at <https://www.gnu.org/licenses/>
