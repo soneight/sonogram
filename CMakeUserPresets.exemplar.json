@@ -4,10 +4,10 @@
         "name": "local-base_",
         "hidden": true,
         "cacheVariables": {
-            "FETCHCONTENT_SOURCE_DIR_SON8__MAINLAND": "UPDATE_PATH_TO/code/hub/soneight/mainland",
-            "FETCHCONTENT_SOURCE_DIR_SON8__C_HEADER": "UPDATE_PATH_TO/code/hub/soneight/c_header",
-            "FETCHCONTENT_SOURCE_DIR_SON8__CXX_UNIT": "UPDATE_PATH_TO/code/hub/soneight/cxx_unit",
-            "FETCHCONTENT_SOURCE_DIR_SON8__CORE_LIB": "UPDATE_PATH_TO/code/hub/soneight/core_lib"
+            "FETCHCONTENT_SOURCE_DIR_SON8__MAINLAND": "/UPDATE_PATH_TO/soneight/mainland",
+            "FETCHCONTENT_SOURCE_DIR_SON8__C_HEADER": "/UPDATE_PATH_TO/soneight/c_header",
+            "FETCHCONTENT_SOURCE_DIR_SON8__CXX_UNIT": "/UPDATE_PATH_TO/soneight/cxx_unit",
+            "FETCHCONTENT_SOURCE_DIR_SON8__CORE_LIB": "/UPDATE_PATH_TO/soneight/core_lib"
         }
     }, {
         "name": "local-debug_",

@@ -67,6 +67,7 @@ namespace app {
          }
 #endif
       }
+
       if ( scopeDepth ) throw Error{ "app::gen_program: scope depth not equal zero: " + cxx::to_string( scopeDepth)};
 
       return program;

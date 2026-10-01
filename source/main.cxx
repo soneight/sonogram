@@ -94,6 +94,7 @@ void son8::main( Args args ) try {
    using OutputFile = std::ofstream;
    OutputFile programFile{ outputPath / ( program.fileName + ".cxx" ), cxx::ios::binary };
    if ( not programFile.is_open( ) ) throw Error{ "cannot open program file for writing" };
+   programFile << program.include.gen( ) << New_Line;
    programFile << program.mainHead << New_Line;
    programFile << program.mainBody << New_Line;
    programFile << program.mainFoot << New_Line;

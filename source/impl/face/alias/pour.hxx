@@ -14,7 +14,7 @@
 #define APP_EXPR constexpr auto
 #define APP_DISC auto
 #define APP_FUNC [[nodiscard]] auto
-#define APP_PROC inline void
+#define APP_PROC void
 #define APP_SKIP ((void)0)
 
 namespace app {
