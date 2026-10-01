@@ -15,6 +15,9 @@ namespace app {
          APPTYPES_beg, // skip
          Apptype_Unknown = APPTYPES_beg,
          Apptype_Program,
+         // TODO: Apptype_Package,
+         // TODO: AppType_Library,
+         // TODO(maybe?): AppType_Console,
          APPTYPES_end, // skip
          // NOTE keywords must be contiguous
          KEYWORDS_beg = APPTYPES_end, // skip

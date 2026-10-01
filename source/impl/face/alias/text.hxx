@@ -3,14 +3,11 @@
 
 #include "pour.hxx"
 // son8
-#include <son8/cxx/text.hxx>
+#include <son8/core/alias/text.hxx>
 
 namespace app {
    using namespace cxx::string_literals;
    using namespace cxx::string_view_literals;
-
-   using Text = cxx::string;
-   using View = cxx::string_view;
 }
 
 #endif//FACE_ALIAS_TEXT_HXX
