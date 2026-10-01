@@ -31,11 +31,11 @@ if( NOT TARGET son8__core_lib )
     fetchcontent_declare(
         son8__core_lib
         GIT_REPOSITORY https://github.com/soneight/core_lib.git
-        GIT_TAG        85a4e685d0e5b245f8cbb94e625a8ab1365c5f16 # v0.0.5
+        GIT_TAG        80c865bc0a51fdfa5d1199d95cb8681b3c46999e # v0.1.0
     )
     fetchcontent_makeavailable( son8__core_lib )
 endif( )
-message( STATUS "${SON8_APP}: found `son8__core_lib` target" )
+message( STATUS "${SON8_APP}: target `son8__core_lib` found" )
 
 target_link_libraries( ${SON8_APP} PRIVATE ${APP_LIB} son8::mainland son8::c_header son8::cxx_unit son8::core_lib )
 
