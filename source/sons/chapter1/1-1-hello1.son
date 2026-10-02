@@ -1,4 +1,4 @@
 hello1-program :
     # -use std.io,
-    -echo 'hello, world\n'
+    -echo 'hello, world\n',
 ;

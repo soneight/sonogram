@@ -34,8 +34,9 @@ namespace app {
    struct Program final {
       // states
       enum class State : Unt0 {
-         Global,
-         Body,
+         Global, // program header (program name with program keyword)
+         Body, // main function body
+         Init, // variable initialization state
       };
       // data members
       State state{ };

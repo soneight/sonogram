@@ -105,18 +105,23 @@ namespace app {
          static_assert( Count == Data.size( ));
          static auto view_to_kind( View view ) -> Kind;
       };
-
+      using Line = Unt2;
+      using Coln = Unt2;
       // data members
       View view;
-      Size line;
-      Size coln;
+      Line line;
+      Coln coln;
       Kind kind;
       // constructors
       // Token( ) = default;
-      Token( View view, Size line, Size coln, Kind kind )
+      Token( View view, Line line, Coln coln, Kind kind )
       : view{ view }, line{ line }, coln{ coln }, kind{ kind } {  }
       // throw current token on error
       void throw_error( Ref< Text > text ) const;
+      Text str_literal( ) const {
+         APP_ASSERT( kind == Kind::Literal_Single and "require literal to process" );
+         return Text{ view.substr( 1, view.size( ) - 2 ) };
+      }
    }; // struct Token
 
    APP_FUNC to_string( Token::Kind kind ) -> Text;
