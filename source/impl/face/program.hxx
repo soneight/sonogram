@@ -34,9 +34,11 @@ namespace app {
    struct Program final {
       // states
       enum class State : Unt0 {
-         Global, // program header (program name with program keyword)
+         Name, // program header (program name with program keyword)
          Body, // main function body
          Init, // variable initialization state
+         Echo, // print state
+         Inex, // TODO: init expression (short helper for initialize vars with same type) `{ a, b, c }-int2-void`
       };
       // data members
       State state{ };

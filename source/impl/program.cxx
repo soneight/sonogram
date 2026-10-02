@@ -3,6 +3,13 @@
 
 namespace app {
 
+   APP_DATA Math_Compound_Ops = Flat< View, 4 >{{
+      "*="sv, "/="sv, "+="sv, "-="sv
+   }};
+   APP_DATA math_compound_op( Token::Kind kind ) -> View {
+      return Math_Compound_Ops[APP_CAST( Unt0, kind ) - APP_CAST( Unt0, Token::Kind::Math_Multiply )];
+   }
+
    void Token::throw_error( Ref< Text > text ) const {
       throw Error{ text + ": "s + to_string( *this ) };
    }
@@ -37,7 +44,7 @@ namespace app {
       Bool isProgramExist{ };
       Bool isVoidApplicable{ };
 
-      auto parse_global = [&] {
+      auto parse_name = [&] {
          switch ( token.kind ) {
          case Kind::Identifier: { currIdentifier = token.view; return; }
          case Kind::Keyword_Program: {
@@ -62,16 +69,7 @@ namespace app {
 
       auto parse_body = [&] {
          switch ( token.kind ) {
-         case Kind::Keyword_Echo: {
-            auto expectString = peek_token( );
-            if ( expectString.kind != Kind::Literal_Single ) { token.throw_error( s+ "literal string expected, but"s ); }
-            program.mainBody.append( "\tstd::cout << \""s + expectString.str_literal( ) + "\";\n");
-            next_token( );
-            auto expectComma = peek_token( ).kind;
-            if ( expectComma != Kind::Single_Comma ) { token.throw_error( s + "bad token after string literal"s ); }
-            next_token( );
-            return;
-         }
+         case Kind::Keyword_Echo: { program.state = State::Echo; return; }
          case Kind::Identifier: {
             if ( not currIdentifier.empty( )) { token.throw_error( s + "double identifier"s ); }
             currIdentifier = token.view;
@@ -130,9 +128,25 @@ namespace app {
 
             if ( peek_token( ).kind != Kind::Single_Comma ) { token.throw_error( s + "expected comma after init"s ); }
 
-            program.mainBody.append( "\t"s + Text{ currIdentifier } + " = " + Text{ curr } + ";\n" );
+            program.mainBody.append( "\t"s + Text{ currIdentifier } + " = "s + Text{ curr } + ";\n"s );
             program.state = State::Body;
             currIdentifier = { };
+            next_token( );
+
+            return;
+         }
+         case Kind::Math_Minus:
+         case Kind::Math_Divide:
+         case Kind::Math_Multiply:
+         case Kind::Math_Plus: {
+            auto peek = peek_token( );
+            auto peek2 = peek_token( 1 );
+            bool isNumberEnd = peek.kind == Kind::Number and peek2.kind == Kind::Single_Comma;
+            if ( not isNumberEnd ) { token.throw_error( s + "expected number in body init state after math operator"s ); }
+            program.mainBody.append( "\t"s + Text{ currIdentifier } + Text{ math_compound_op( token.kind ) } + Text{ peek.view } + ";\n" );
+            program.state = State::Body;
+            currIdentifier = { };
+            next_token( );
             next_token( );
 
             return;
@@ -141,15 +155,38 @@ namespace app {
          }
       };
 
+      auto parse_echo = [&] {
+         switch ( token.kind ) {
+         case Kind::Literal_Single: {
+            auto peek = peek_token( );
+            if ( peek.kind != Kind::Single_Comma ) { token.throw_error( s + "bad token after string literal"s ); }
+            program.mainBody.append( "\tstd::cout << \""s + token.str_literal( ) + "\";\n");
+            program.state = State::Body;
+            next_token( );
+            return;
+         }
+         case Kind::Identifier: {
+            if ( not varTide.count( token.view )) { token.throw_error( s + "unknown identifier in echo state"s ); }
+            if ( peek_token( ).kind != Kind::Single_Comma ) { token.throw_error( s + "expect comma after identifier in echo state"s ); }
+            program.mainBody.append( "\tstd::cout << "s + Text{ token.view } + ";\n" );
+            program.state = State::Body;
+            next_token( );
+            return;
+         }
+            default: { token.throw_error( s + "unexpected token in body echo state"s ); }
+         }
+      };
+
       while ( next_token( ) ) {
-#ifdef APP_INNER
+#ifdef APP_INNER // only inner builds should preserve spaces and comments
          if ( token.kind == Kind::Space or token.kind == Kind::Comment ) continue;
 #endif//APP_INNER
 
          switch ( program.state ) {
-         case State::Global: parse_global( ); continue;
+         case State::Name: parse_name( ); continue;
          case State::Body: parse_body( ); continue;
          case State::Init: parse_init( ); continue;
+         case State::Echo: parse_echo( ); continue;
             default: {
                token.throw_error( "gen_program: unhandled program state" );
             }
@@ -157,7 +194,7 @@ namespace app {
       } // while next_token( )
 
       if ( not currIdentifier.empty( )) { throw Error{ s + "identifier leftover: " + Text{ currIdentifier }}; }
-      if ( program.state == State::Global ) { throw Error{ s + "incorrect state on last token"s }; }
+      if ( program.state == State::Name ) { throw Error{ s + "incorrect state on last token"s }; }
 
       return program;
    }
