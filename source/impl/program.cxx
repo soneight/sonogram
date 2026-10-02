@@ -2,6 +2,11 @@
 #include "face/program.hxx"
 
 namespace app {
+
+   void Token::throw_error( Ref< Text > text ) const {
+      throw Error{ text + ": "s + to_string( *this ) };
+   }
+
    using Tokens = Grow< Token >;
    APP_FUNC gen_program( Ref< Tokens > tokens ) -> Program {
       using Kind = Token::Kind;
@@ -9,66 +14,75 @@ namespace app {
       static constexpr int Scope_Opened = 0;
       static constexpr int Scope_Closed = 1;
       Program program;
+
+      Token token = tokens.front( );
+      APP_ASSERT( token.kind == Kind::Apptype_Program and "app::gen_program: tokens does not start with application type program" );
+      token = tokens.back( );
+      APP_ASSERT( token.kind == Kind::Last_ and "app::gen_program: tokens does not ends with last terminator" );
       auto itPos = tokens.begin( ) + 1;
-      Kind expectKind = Kind::Identifier;
-      Token token = tokens.back( );
 
-      if ( token.kind != Kind::Last_ ) { throw Error{ "app::gen_program: tokens does not ends with last terminator" }; }
-
-      auto next_token = [&]( ) -> bool {
+      auto next_token = [&token,&itPos] {
          token = *itPos++;
 
          return token.kind != Kind::Last_;
       };
-      int scopeDepth{ };
-      auto parse_scope = [&]( int scope ) {
-         if ( program.state == State::Global and expectKind != Kind::Scope_Opened ) { throw Error{ "app::gen_program expect open score in global state" }; }
 
-         program.state = State::Body;
-         int d[2] = { scopeDepth + 1, scopeDepth - 1 };
-         scopeDepth = d[scope];
-
-         if ( scopeDepth < 0 ) { throw Error{ "app::gen_program: scope depth negative" }; }
+      auto peek_token = [&tokens,&itPos]( int offset = 0 ) {
+         if ( itPos + offset < tokens.end( )) return *( itPos + offset );
+         return tokens.back( );
       };
-      auto parse_program = [&]{
-         if ( program.state == State::Global ) {
-            if ( expectKind != Kind::Keyword_Program ) { throw Error{ "app::gen_program: expect keyword program in global state" }; }
 
-            expectKind = Kind::Scope_Opened;
+      Text s{ "gen_program: " };
+      Text currIdentifier;
+      Bool isProgramExist{ };
+
+      auto parse_global = [&] {
+         switch ( token.kind ) {
+         case Kind::Identifier: { currIdentifier = token.view; return; }
+         case Kind::Keyword_Program: {
+            if ( currIdentifier.empty( )) { token.throw_error( s + "no identifier in global state before"s ); }
+            if ( isProgramExist ) token.throw_error( s + "program repeated"s );
+            isProgramExist = true;
+            program.fileName = currIdentifier;
+            return;
+         }
+         case Kind::Scope_Opened: {
+            if ( currIdentifier.empty( )) { token.throw_error( s + "no identifier in global state before"s ); }
+            if ( not isProgramExist ) { token.throw_error( s + "no program keyword in global state before"s ); }
+            currIdentifier.clear( );
+            program.state = State::Body;
+            return;
+         }
+            default: { token.throw_error( s + "unexpected token in global state" ); }
          }
       };
-      auto parse_identifier = [&]{
-         if ( program.state == State::Global ) {
-            program.fileName = token.view;
-            expectKind = Kind::Keyword_Program;
+
+      auto parse_body = [&] {
+         switch ( token.kind ) {
+         case Kind::Scope_Closed: {
+            return;
+         }
+            default: token.throw_error( s + "unexpected token in body state" );
          }
       };
+
+
 
       while ( next_token( ) ) {
-         switch ( token.kind ) {
 #ifdef APP_INNER
-         case Kind::Space: case Kind::Comment: continue;
+         if ( token.kind == Kind::Space or token.kind == Kind::Comment ) continue;
 #endif//APP_INNER
-         case Kind::Identifier: parse_identifier( ); continue;
-         case Kind::Keyword_Program: parse_program( ); continue;
-         case Kind::Scope_Opened: parse_scope( Scope_Opened ); continue;
-         case Kind::Scope_Closed: parse_scope( Scope_Closed ); continue;
-         case Kind::Last_: break;
-            default: {
-                throw Error{ "app::gen_program: token is not supported yet" + to_string( token )};
-            }
-         }
-         APP_SKIP;
-#if 0 // TODO
-         switch ( program.state ) {
-            default: {
-               continue;
-            }
-         }
-#endif
-      }
 
-      if ( scopeDepth ) throw Error{ "app::gen_program: scope depth not equal zero: " + cxx::to_string( scopeDepth)};
+         switch ( program.state ) {
+         case State::Global: parse_global( ); continue;
+         case State::Body: parse_body( ); continue;
+            default: {
+               token.throw_error( "gen_program: unhandled program state" );
+            }
+         }
+      } // while next_token( )
+
+      if ( program.state == State::Global ) { throw Error{ s + "incorrect state on last token"s }; }
 
       return program;
    }

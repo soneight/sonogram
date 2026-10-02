@@ -115,6 +115,8 @@ namespace app {
       // Token( ) = default;
       Token( View view, Size line, Size coln, Kind kind )
       : view{ view }, line{ line }, coln{ coln }, kind{ kind } {  }
+      // throw current token on error
+      void throw_error( Ref< Text > text ) const;
    }; // struct Token
 
    APP_FUNC to_string( Token::Kind kind ) -> Text;
