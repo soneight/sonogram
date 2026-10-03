@@ -118,6 +118,7 @@ namespace app {
       : view{ view }, line{ line }, coln{ coln }, kind{ kind } {  }
       // throw current token on error
       void throw_error( Ref< Text > text ) const;
+      Text text( ) const { return Text{ view }; }
       Text str_literal( ) const {
          APP_ASSERT( kind == Kind::Literal_Single and "require literal to process" );
          return Text{ view.substr( 1, view.size( ) - 2 ) };
