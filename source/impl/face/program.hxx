@@ -33,12 +33,18 @@ namespace app {
    // program
    struct Program final {
       // states
+      // -- NOTE: function calls should appear only in expressions, so inside curly brackets
+      // \ as all expressions allowed only in curly braces, only literals or variables bypass
+      // \ this restriction
       enum class State : Unt0 {
          Name, // program header (program name with program keyword)
          Body, // main function body
          Init, // variable initialization state
          Echo, // print state
-         Inex, // TODO: init expression (short helper for initialize vars with same type) `{ a, b, c }-int2-void`
+         Inex, // short helper for initialize vars with same type, like `{ a, b, c }-int2-void`
+         Type, // type specifiers
+         // NOTE: for now all expressions evaluated from left, and without any precedence
+         Expr, // TODO: expression that generates only one return value , like`{ a << b }`, `{ a =+ b && c }`
       };
       // data members
       State state{ };

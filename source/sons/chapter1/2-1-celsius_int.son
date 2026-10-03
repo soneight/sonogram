@@ -1,19 +1,16 @@
 # print Fahrenheit-Celsius table
 # \ for fahr equal 0, 20, ..., 300
 celsius_int-program:
-    fahr-int2-void,
-    celsius-int2-void,
-    lower-int2-void,
-    upper-int2-void,
-    step-int2-void,
+    { fahr, celsius }-int2-void,
+    { lower, upper, step, }-int2-void,
 
-    fahr 0,
+    lower 0,
     upper 300,
     step 20,
-    celsius fahr,
-    celsius =- 32,
-    celsius =* 5,
-    celsius =/ 9,
+
+    fahr lower,
+
+    celsius{ fahr =- 32 =* 5 =/ 9 },
     -echo fahr,
     -echo '\t',
     -echo celsius,
