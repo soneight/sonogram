@@ -139,8 +139,8 @@ namespace app {
       Text str_literal( ) const;
    }; // struct Token
 
-   APP_FUNC to_string( Token::Kind kind ) -> Text;
-   APP_FUNC to_string( Ref< Token > token ) -> Text;
+   APP_DCLF to_string( Token::Kind kind ) -> Text;
+   APP_DCLF to_string( Ref< Token > token ) -> Text;
 }
 
 #endif//FACE_TOKEN_HXX

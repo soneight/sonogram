@@ -15,7 +15,7 @@ namespace app {
    }
 
    using Tokens = Grow< Token >;
-   APP_FUNC gen_program( Ref< Tokens > tokens ) -> Program {
+   APP_DCLF gen_program( Ref< Tokens > tokens ) -> Program {
       using Kind = Token::Kind;
       using State = Program::State;
       static constexpr int Scope_Opened = 0;

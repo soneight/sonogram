@@ -7,7 +7,7 @@
 namespace app {
 
    using Tokens = Grow< Token >;
-   APP_FUNC lex_tokens( Ref< Text > str ) -> Tokens;
+   APP_DCLF lex_tokens( Ref< Text > str ) -> Tokens;
 
 }
 

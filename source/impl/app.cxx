@@ -4,7 +4,7 @@
 
 namespace app {
 
-   APP_FUNC to_string( Token::Kind kind ) -> Text {
+   APP_DCLF to_string( Token::Kind kind ) -> Text {
       using TokenView = Flat< View, Token::Count + 1 >;
       APP_DATA kinds = TokenView{{
          "Spaces"sv,
@@ -70,7 +70,7 @@ namespace app {
       return APP_CAST( Kind, Beg + index );
    }
 
-   APP_FUNC to_string( Ref< Token > token ) -> Text {
+   APP_DCLF to_string( Ref< Token > token ) -> Text {
       Text result;
       auto cb = cxx::to_string( token.coln( ));
       auto ce = cxx::to_string( token.coln( ) + token.view( ).size( ) - 1 );

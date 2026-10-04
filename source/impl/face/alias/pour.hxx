@@ -12,10 +12,16 @@
 #define APP_CAST( type, value ) static_cast< type >(( value ))
 #define APP_DATA static constexpr auto
 #define APP_EXPR constexpr auto
-#define APP_DISC auto
-#define APP_FUNC [[nodiscard]] auto
-#define APP_PROC void
+#define APP_DISC inline auto
+#define APP_FUNC [[nodiscard]] inline auto
+#define APP_PROC inline void
 #define APP_SKIP ((void)0)
+// `DeCLare Function`
+#define APP_DCLF [[nodiscard]] auto
+// `DeCLare Discard function`
+#define APP_DCLD auto
+// `DeCLare Procedure`
+#define APP_DCLP void
 
 namespace app {
    using namespace son8;

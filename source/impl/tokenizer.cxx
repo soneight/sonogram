@@ -92,7 +92,7 @@ namespace {
 
    using Tokens = Grow< Token >;
 
-   APP_FUNC lex_tokens( Ref< Text > str ) -> Tokens {
+   APP_DCLF lex_tokens( Ref< Text > str ) -> Tokens {
       // NOTE: not an error as initial file reading should catch this
       APP_ASSERT( str.front( ) != '\n' and str.back( ) == '\n' and "source should end with new line or begin with it" );
       Tokens tokens;
