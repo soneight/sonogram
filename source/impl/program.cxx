@@ -21,28 +21,27 @@ namespace app {
       using State = Program::State;
       static constexpr int Scope_Opened = 0;
       static constexpr int Scope_Closed = 1;
-      Program program;
 
       APP_ASSERT( tokens.front( ).is( Kind::Apptype_Program ) and "app::gen_program: tokens does not start with application type program" );
       APP_ASSERT( tokens.back( ).is( Kind::Last_ ) and "app::gen_program: tokens does not ends with last terminator" );
 
-      Token::Index tokenPos{ 1 };
-      Token token{ tokenPos };
-
-      auto next_token = [&token,&tokenPos] {
-         token = Token{ tokenPos++ };
-
-         return not token.is( Kind::Last_ );
-      };
-
-      auto peek_token = [&tokenPos]( int offset = 0 ) -> Token {
-         Token::Index index = tokenPos + offset;
+      Token::Index tokenCursor{ 1 };
+      auto peek_token = [&]( int offset = 0 ) -> Token {
+         Token::Index index = tokenCursor + offset;
 
          if ( index < tokens_size( )) return Token{ index };
 
          return tokens_back( );
       };
 
+      Token token{ tokenCursor };
+      auto next_token = [&] {
+         token = Token{ tokenCursor++ };
+
+         return not token.is( Kind::Last_ );
+      };
+
+      Program program;
       auto parse_name = [&] {
          static View currIdentifier;
          static Bool isProgramExist{ };
@@ -73,7 +72,7 @@ namespace app {
          }
       };
 
-      Tide< View > varTide_, existingVars{ };
+      Tide< View > existingVars{ };
       Grow< View > pendingVars{ };
 
       auto parse_body = [&] {
