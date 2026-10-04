@@ -1,13 +1,21 @@
 #ifndef FACE_TOKENIZER_HXX
 #define FACE_TOKENIZER_HXX
 
-#include "alias/data.hxx"
 #include "token.hxx"
 
 namespace app {
 
-   using Tokens = Grow< Token >;
-   APP_DCLF lex_tokens( Ref< Text > str ) -> Tokens;
+   APP_DCLP tokens_clear( );
+
+   APP_DCLP tokens_reserve( Size size );
+
+   APP_DCLF tokens_size( ) -> Token::Index;
+
+   APP_DCLF tokens_back( ) -> Token;
+
+   APP_DCLP tokens_append( Uni< Token::Item > item );
+
+   APP_DCLP lex_tokens( Ref< Text > str );
 
 }
 

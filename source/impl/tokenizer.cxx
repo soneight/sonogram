@@ -1,5 +1,6 @@
 #include "face/tokenizer.hxx"
 #include "face/alias/flow.hxx"
+#include "face/alias/data.hxx"
 #include "face/locale.hxx"
 #include "face/limits.hxx"
 // son8
@@ -58,19 +59,26 @@ namespace {
 
       static thread_local inline Grow< Token::Item > items;
    };
-} // namespace
 
-   Token::Token( View view, Line line, Coln coln, Kind kind ) {
-      index = Data::items.size( );
-      Data::items.emplace_back( view, line, coln, kind );
-   }
+} // anonymous namespace
+
+   APP_DCLP tokens_clear( ) { Data::items.clear( ); }
+
+   APP_DCLP tokens_reserve( Size size ) { Data::items.reserve( size ); }
+
+   APP_DCLP tokens_append( Uni< Token::Item > item ) { Data::items.push_back( item ); }
+
+   APP_DCLF tokens_size( ) -> Token::Index { return APP_CAST( Token::Index, Data::items.size( )); }
+
+   APP_DCLF tokens_back( ) -> Token { return Token{  tokens_size( ) - 1 }; }
+
+   // Token::Token( View view, Line line, Coln coln, Kind kind ) {
+   //    index = Data::items.size( );
+   //    Data::items.emplace_back( view, line, coln, kind );
+   // }
 
    Void Token::overwrite( Item item ) {
       Data::items[index] = item;
-      // view = item.view;
-      // line = item.line;
-      // coln = item.coln;
-      // kind = item.kind;
    }
 
    View Token::view( ) const { return Data::items[index].view; }
@@ -90,19 +98,19 @@ namespace {
 
    Bool Token::is( Token::Kind check ) const { return check == kind( ); }
 
-   using Tokens = Grow< Token >;
-
-   APP_DCLF lex_tokens( Ref< Text > str ) -> Tokens {
+   APP_DCLP lex_tokens( Ref< Text > str ) {
       // NOTE: not an error as initial file reading should catch this
       APP_ASSERT( str.front( ) != '\n' and str.back( ) == '\n' and "source should end with new line or begin with it" );
-      Tokens tokens;
+      tokens_clear( );
       BufferBraces bufferBraces = { };
       APP_ASSERT( bufferBraces.idx == 0 );
       Size const size{ str.size( ) };
-      tokens.reserve( size >> 3u );
+      tokens_reserve( size >> 3u );
       using Kind = Token::Kind;
-      tokens.emplace_back( View{ "\0"sv }, 0, 0, Kind::Apptype_Unknown );
-      Size pos{ }, curLine{ 1u }, curColn{ };
+      tokens_append( { View{ "\0"sv }, 0, 0, Kind::Apptype_Unknown });
+      Size pos{ };
+      Token::Line curLine{ 1u };
+      Token::Coln curColn{ };
       Unt0 ch;
       auto next_char = [&]( ) -> bool {
          ++curColn;
@@ -151,9 +159,9 @@ namespace {
 
          if ( kind == Kind::Error ) return kind_error( "unknown keyword"s );
          // is app and unknown
-         if ( kind == Kind::Keyword_Program and not tokens[0].is( Kind::Apptype_Unknown )) { return kind_error( "application type duplicate"s ); }
+         if ( kind == Kind::Keyword_Program and not Token{0 }.is( Kind::Apptype_Unknown )) { return kind_error( "application type duplicate"s ); }
 
-         tokens[0].overwrite( Token::Item{ "\0"sv, 0, 0, Kind::Apptype_Program });
+         Token{ 0 }.overwrite( Token::Item{ "\0"sv, 0, 0, Kind::Apptype_Program });
 
          return kind;
       };
@@ -262,8 +270,8 @@ namespace {
       // \ REASON OF INFINITE LOOP could be caused because of this behavior!
       while ( next_char( )) {
          if ( ch == '\n' ) {
-            if ( Ref< Token > prevToken = tokens.back( ); prevToken.is( Kind::Space )) {
-               throw Error{ "app::lex_tokens: trailing whitespace at "s + to_string( tokens.back( ))};
+            if ( Token prevToken = tokens_back( ); prevToken.is( Kind::Space )) {
+               throw Error{ "app::lex_tokens: trailing whitespace at "s + to_string( tokens_back( ))};
             }
 
             if ( pos >= size ) { break; } // end of source
@@ -288,7 +296,7 @@ namespace {
          else if ( Locale::is_binary( ch )) kind = scan_binary( );
          else kind = scan_singles( );
 
-         if ( kind == Kind::Error ) { throw Error{ "T?: "s + errMsg + " near "s + to_string( tokens.back( ))}; }
+         if ( kind == Kind::Error ) { throw Error{ "T?: "s + errMsg + " near "s + to_string( tokens_back( ))}; }
          // NOTE: some funcs may want to return Last_ kind to continue a process
          if ( kind == Kind::Last_ ) { continue; }
          --pos;
@@ -297,17 +305,15 @@ namespace {
 #ifndef APP_INNER // preserve token spaces and comments only for internal builds
          if ( kind == Kind::Space or kind == Kind::Comment ) { continue; }
 #endif
-         tokens.emplace_back( view( ), curLine, prevCol, kind );
+         tokens_append( { view( ), curLine, prevCol, kind });
 #ifdef APP_ERROR
          cxx::cout << to_string( tokens.back( ) ) << cxx::endl;
 #endif
       } // while next_char( )
 
-      if ( bufferBraces.idx != 0 ) { throw Error{ "T?: braces depth not equal zero "s + bufferBraces.datastr( ) + " near "s + to_string( tokens.back( ))}; }
+      if ( bufferBraces.idx != 0 ) { throw Error{ "T?: braces depth not equal zero "s + bufferBraces.datastr( ) + " near "s + to_string( tokens_back( ))}; }
 
-      tokens.emplace_back( "\0"sv, 0, 0, Kind::Last_ );
-
-      return tokens;
+      tokens_append( { "\0"sv, 0, 0, Kind::Last_ });
    } // function lex_tokens
 
 } // namespace app

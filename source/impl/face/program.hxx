@@ -2,8 +2,6 @@
 #define FACE_PROGRAM_HXX
 
 #include "alias/text.hxx"
-#include "alias/data.hxx"
-#include "token.hxx"
 
 namespace app {
    // include `std` headers invariant helper
@@ -63,8 +61,7 @@ namespace app {
       }
    };
 
-   using Tokens = Grow< Token >;
-   APP_DCLF gen_program( Ref< Tokens > tokens ) -> Program;
+   APP_DCLF gen_program( ) -> Program;
 
 }
 

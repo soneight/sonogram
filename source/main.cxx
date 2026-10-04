@@ -81,18 +81,18 @@ void son8::main( Args args ) try {
    Ref< Text > source = Global_Source_Read;
    if ( not isLineLengthValid( source, Max::Line_Length ) ) throw Error{ "source file contains lines with length exceeding maximum limit" };
    // tokens
-   auto tokens = lex_tokens( source );
-   if ( tokens.empty( )) throw Error{ "main: tokens is empty, nothing to do" };
-   for ( Ref< Token > token : tokens ) {
-      cxx::cout << to_string( token ) << New_Line;
+   lex_tokens( source );
+   if ( not tokens_size( )) throw Error{ "main: tokens is empty, nothing to do" };
+   for ( Token::Index i{ 0 };  i < tokens_size( ); ++i ) {
+      cxx::cout << to_string( Token{ i }) << New_Line;
    }
    cxx::cout << cxx::endl;
-   switch ( tokens[0].kind( )) {
+   switch ( Token{ 0 }.kind( )) {
    case Token::Kind::Apptype_Program: cxx::cout << "Application Type: Program" << std::endl; break;
-      default: tokens[0].throw_error( "main: incorrect or not supported application type"s );
+      default: Token{ 0 }.throw_error( "main: incorrect or not supported application type"s );
    }
    // program
-   auto program = gen_program( tokens );
+   auto program = gen_program( );
    fs::path outputPath = fs::current_path( ) / "temp";
    fs::create_directory( outputPath );
    using OutputFile = std::ofstream;

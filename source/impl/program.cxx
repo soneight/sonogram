@@ -1,5 +1,7 @@
 #include "face/alias/flow.hxx"
+#include "face/alias/data.hxx"
 #include "face/program.hxx"
+#include "face/tokenizer.hxx"
 
 namespace app {
 
@@ -14,8 +16,7 @@ namespace app {
       throw Error{ text + ": "s + to_string( *this ) };
    }
 
-   using Tokens = Grow< Token >;
-   APP_DCLF gen_program( Ref< Tokens > tokens ) -> Program {
+   APP_DCLF gen_program( ) -> Program {
       using Kind = Token::Kind;
       using State = Program::State;
       static constexpr int Scope_Opened = 0;
@@ -26,20 +27,20 @@ namespace app {
       APP_ASSERT( tokens.back( ).is( Kind::Last_ ) and "app::gen_program: tokens does not ends with last terminator" );
 
       Token::Index tokenPos{ 1 };
-      Token token = tokens[tokenPos];
+      Token token{ tokenPos };
 
-      auto next_token = [&token,&tokens,&tokenPos] {
-         token = tokens[tokenPos++];
+      auto next_token = [&token,&tokenPos] {
+         token = Token{ tokenPos++ };
 
          return not token.is( Kind::Last_ );
       };
 
-      auto peek_token = [&tokens,&tokenPos]( int offset = 0 ) {
+      auto peek_token = [&tokenPos]( int offset = 0 ) -> Token {
          Token::Index index = tokenPos + offset;
 
-         if ( index < tokens.size( )) return tokens[index];
+         if ( index < tokens_size( )) return Token{ index };
 
-         return tokens.back( );
+         return tokens_back( );
       };
 
       auto parse_name = [&] {

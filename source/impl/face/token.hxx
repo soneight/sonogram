@@ -126,7 +126,7 @@ namespace app {
       // Kind kind;
       // constructors
       Token( ) = delete;
-      Token( View view, Line line, Coln coln, Kind kind );
+      // Token( View view, Line line, Coln coln, Kind kind );
       // throw current token on error
       void throw_error( Ref< Text > text ) const;
       Text text( ) const;
