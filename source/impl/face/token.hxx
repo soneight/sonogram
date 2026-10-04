@@ -105,24 +105,38 @@ namespace app {
          static_assert( Count == Data.size( ));
          static auto view_to_kind( View view ) -> Kind;
       };
+      using Index = Unt2;
       using Line = Unt2;
       using Coln = Unt2;
       // data members
-      View view;
-      Line line;
-      Coln coln;
-      Kind kind;
+      struct Item {
+         using Line = Token::Line;
+         using Coln = Token::Coln;
+         using Kind = Token::Kind;
+         View view;
+         Line line;
+         Coln coln;
+         Kind kind;
+         Item( View v, Line l, Coln c, Kind k ) : view{ v }, line{ l }, coln{ c }, kind{ k } { }
+      };
+      Unt2 index;
+      // View view;
+      // Line line;
+      // Coln coln;
+      // Kind kind;
       // constructors
-      // Token( ) = default;
-      Token( View view, Line line, Coln coln, Kind kind )
-      : view{ view }, line{ line }, coln{ coln }, kind{ kind } {  }
+      Token( ) = delete;
+      Token( View view, Line line, Coln coln, Kind kind );
       // throw current token on error
       void throw_error( Ref< Text > text ) const;
-      Text text( ) const { return Text{ view }; }
-      Text str_literal( ) const {
-         APP_ASSERT( kind == Kind::Literal_Single and "require literal to process" );
-         return Text{ view.substr( 1, view.size( ) - 2 ) };
-      }
+      Text text( ) const;
+      View view( ) const;
+      Line line( ) const;
+      Coln coln( ) const;
+      Kind kind( ) const;
+      Bool is( Kind check ) const;
+      Void overwrite( Item item );
+      Text str_literal( ) const;
    }; // struct Token
 
    APP_FUNC to_string( Token::Kind kind ) -> Text;

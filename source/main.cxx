@@ -87,7 +87,7 @@ void son8::main( Args args ) try {
       cxx::cout << to_string( token ) << New_Line;
    }
    cxx::cout << cxx::endl;
-   switch ( tokens[0].kind ) {
+   switch ( tokens[0].kind( )) {
    case Token::Kind::Apptype_Program: cxx::cout << "Application Type: Program" << std::endl; break;
       default: tokens[0].throw_error( "main: incorrect or not supported application type"s );
    }

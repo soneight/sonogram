@@ -6,6 +6,7 @@
 #include <son8/cxx/file.hxx>
 
 namespace app {
+
    APP_EXPR Token::is_bracket_opened( Kind kind ) -> bool {
       // NOTE: determine if bracket is opened `:({[` or close `;)}]`
       // \ return true if it is an opened bracket checking first bit
@@ -21,6 +22,7 @@ namespace app {
    APP_EXPR Locale::is_prints( Unt0 ch ) -> bool { return ( Masks[Prints][ch >> 6u] >> ( ch & 63u )) & 1u; }
 
 namespace {
+
    struct BufferBraces final {
       using Pairs = Flat< cxx::pair< Char, Char >, 4 >;
       APP_DATA pairs = Pairs{{
@@ -49,8 +51,44 @@ namespace {
       }
       APP_FUNC is_exceed_nested_depth( ) const -> bool { return nestedDepth > Max::Nested_Depth; }
       APP_FUNC is_exceed_scoped_depth( ) const -> bool { return scopedDepth > Max::Scoped_Depth; }
+
    };
-}
+
+   struct Data {
+
+      static thread_local inline Grow< Token::Item > items;
+   };
+} // namespace
+
+   Token::Token( View view, Line line, Coln coln, Kind kind ) {
+      index = Data::items.size( );
+      Data::items.emplace_back( view, line, coln, kind );
+   }
+
+   Void Token::overwrite( Item item ) {
+      Data::items[index] = item;
+      // view = item.view;
+      // line = item.line;
+      // coln = item.coln;
+      // kind = item.kind;
+   }
+
+   View Token::view( ) const { return Data::items[index].view; }
+
+   Text Token::text( ) const { return Text{ view( )}; }
+
+   Text Token::str_literal( ) const {
+      APP_ASSERT( is( Kind::Literal_Single ) and "require literal to process" );
+      return Text{ view( ).substr( 1, view( ).size( ) - 2 ) };
+   }
+
+   auto Token::kind( ) const -> Kind { return Data::items[index].kind; }
+
+   auto Token::line( ) const -> Line { return Data::items[index].line; }
+
+   auto Token::coln( ) const -> Coln { return Data::items[index].coln; }
+
+   Bool Token::is( Token::Kind check ) const { return check == kind( ); }
 
    using Tokens = Grow< Token >;
 
@@ -113,9 +151,9 @@ namespace {
 
          if ( kind == Kind::Error ) return kind_error( "unknown keyword"s );
          // is app and unknown
-         if ( kind == Kind::Keyword_Program and tokens[0].kind != Kind::Apptype_Unknown ) { return kind_error( "application type duplicate"s ); }
+         if ( kind == Kind::Keyword_Program and not tokens[0].is( Kind::Apptype_Unknown )) { return kind_error( "application type duplicate"s ); }
 
-         tokens[0] = Token{ "\0"sv, 0, 0, Kind::Apptype_Program };
+         tokens[0].overwrite( Token::Item{ "\0"sv, 0, 0, Kind::Apptype_Program });
 
          return kind;
       };
@@ -224,7 +262,7 @@ namespace {
       // \ REASON OF INFINITE LOOP could be caused because of this behavior!
       while ( next_char( )) {
          if ( ch == '\n' ) {
-            if ( Ref< Token > prevToken = tokens.back( ); prevToken.kind == Kind::Space ) {
+            if ( Ref< Token > prevToken = tokens.back( ); prevToken.is( Kind::Space )) {
                throw Error{ "app::lex_tokens: trailing whitespace at "s + to_string( tokens.back( ))};
             }
 

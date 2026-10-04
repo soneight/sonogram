@@ -72,15 +72,15 @@ namespace app {
 
    APP_FUNC to_string( Ref< Token > token ) -> Text {
       Text result;
-      auto cb = cxx::to_string( token.coln );
-      auto ce = cxx::to_string( token.coln + token.view.size( ) - 1 );
+      auto cb = cxx::to_string( token.coln( ));
+      auto ce = cxx::to_string( token.coln( ) + token.view( ).size( ) - 1 );
       result += "Token{";
-      result += " Kind: " + to_string( token.kind );
+      result += " Kind: " + to_string( token.kind( ));
 
-      if ( token.view[0] == '"' ) { result += ", View: '" + Text{ token.view } + "'"; }
-      else { result += ", View: \"" + Text{ token.view } + '"'; }
+      if ( token.view( )[0] == '"' ) { result += ", View: '" + Text{ token.view( )} + "'"; }
+      else { result += ", View: \"" + Text{ token.view( )} + '"'; }
 
-      result += " @" + cxx::to_string( token.line ) + ':' + cb + '-' + ce;
+      result += " @" + cxx::to_string( token.line( )) + ':' + cb + '-' + ce;
       result += " }";
 
       return result;
